@@ -131,7 +131,7 @@ make_example_dists_plot <- function(d) {
         "$\\alpha = 0.5$" = "0.5"
       ),
       scale = fct_rev(scale),
-      dist = fct_relevel(dist, "$\\normal(0, 1)$", "$\\betadist(2,1)$", "$\\gammadist(2, 2)$", "$\\expdist(1)$") 
+      dist = fct_relevel(dist, "$\\expdist(1)$", "$\\normal(0, 1)$", "$\\betadist(2,1)$", "$\\gammadist(2, 2)$") 
     ) %>%
     group_by(scale, dist) %>%
     mutate(density = scale(density, center = FALSE)) %>%
@@ -151,7 +151,7 @@ make_example_dists_plot <- function(d) {
       strip.background = element_blank(),
       axis.text.y = element_blank(),
       axis.ticks.y = element_blank(),
-      legend.position = c(0.01, 0.94),
+      legend.position = c(0.05, 0.85),
       axis.title.y = element_blank(),
       axis.line.y = element_blank(),
       legend.text.align = 0,
@@ -159,7 +159,7 @@ make_example_dists_plot <- function(d) {
       axis.ticks.x = element_line(colour = "gray"),
       legend.title = element_blank()) +
     cowplot::panel_border() +
-    facet_wrap(~dist, ncol = 2, scales = "free") +
+    facet_wrap(~dist, ncol = 4, scales = "free") +
   guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 
   return(p)

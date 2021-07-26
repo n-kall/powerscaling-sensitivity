@@ -48,7 +48,7 @@ list(
   ),
   tar_target(
     tikzplot,
-    save_plot(plot, "../figs/example_dists.tex", width = 3.8, 3.8)
+    save_plot(plot, "../figs/example_dists.tex", width = 6 , height = 2)
   ),
   # conflict examples
   tar_target(
@@ -70,7 +70,7 @@ list(
   ),
   tar_target(
     scale_example_tikz,
-    save_plot(scale_example_plot, "../figs/scaling-example.tex", 2.8, 4.3)
+    save_plot(scale_example_plot, "../figs/scaling-example.tex", 6, 2.25)
   ),
   tar_target(
     n_prior_n_lik_plot,
@@ -78,7 +78,7 @@ list(
   ),
   tar_target(
     n_prior_n_lik_tikz,
-    save_plot(n_prior_n_lik_plot, "../figs/conflict-example-1.tex", 4.6, 4.3)
+    save_plot(n_prior_n_lik_plot, "../figs/conflict-example-1.tex", 6, 4)
   ),
   tar_target(
     n_prior_t_lik_draws,
@@ -90,7 +90,7 @@ list(
   ),
   tar_target(
     n_prior_t_lik_tikz,
-    save_plot(n_prior_t_lik_plot, "../figs/conflict-example-2.tex", 4.7, 4.3)
+    save_plot(n_prior_t_lik_plot, "../figs/conflict-example-2.tex", 6, 4)
   ),
   tar_target(
     weakly_inf_example_draws,
@@ -102,6 +102,6 @@ list(
   ),
   tar_target(
     weakly_inf_tikz,
-    save_plot(weakly_inf_plot, "../figs/weak.tex", 4.6, 4.3)
+    save_plot(weakly_inf_plot, "../figs/weak.tex", 6, 4)
   )
 )
