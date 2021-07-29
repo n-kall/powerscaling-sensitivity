@@ -207,28 +207,52 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
              paste(stri_trans_totitle(component), "power-scaling")
            )
 
+  labels <- c(
+    "Prior power-scaling" = "Prior\npower-scaling",
+    "Likelihood power-scaling" = "Likelihood\npower-scaling"
+  )
   
   p <- combined_draws %>%
     mutate(distribution = factor(distribution, levels = c("prior", "likelihood", "posterior"))) %>%
     filter(distribution == "posterior") %>% 
     ggplot(aes(x = value, color = distribution)) +
     # analytical density
-    geom_line(aes(x = x, y = density, color = distribution), data = analytical, size = 1.1) +
+    geom_line(aes(x = x, y = density, color = distribution),
+              data = analytical, size = 1.1) +
     # shaded posterior density
-    geom_density(aes(color = distribution, fill = distribution), alpha = 0.25, size = 1.1, trim = FALSE, show.legend = FALSE) +
-    scale_color_brewer(type = "qual", palette = "Set2", drop = FALSE) +
-    scale_fill_brewer(type = "qual", palette = "Set2", drop = FALSE) +
-    facet_grid(scaled_component ~ scaling, drop = TRUE, switch = "y") +
+    geom_density(aes(color = distribution, fill = distribution),
+                 alpha = 0.25, size = 1.1, trim = FALSE,
+                 show.legend = FALSE) +
+    scale_color_brewer(type = "qual",
+                       palette = "Set2",
+                       drop = FALSE) +
+    scale_fill_brewer(type = "qual",
+                      palette = "Set2",
+                      drop = FALSE) +
+    facet_grid(scaled_component ~ scaling, drop = TRUE,
+               switch = "y",
+               labeller = labeller(scaled_component = labels)) +
     geom_text(aes(x = x, y = y, label = scaling), data = alpha_labels, show.legend = FALSE) +
     theme_cowplot() +
-    theme(strip.background.y = element_blank(), strip.text.x = element_blank(),
-          axis.text.y = element_blank(), axis.ticks.y = element_blank(), axis.line.y = element_blank()) +
+    theme(
+      strip.background.y = element_blank(),
+      strip.text.x = element_blank(),
+      strip.text.y.left = element_text(angle = 0, size = rel(0.6), hjust = 0),
+      axis.text.y = element_blank(),
+      axis.ticks.y = element_blank(),
+      axis.line.y = element_blank(),
+      legend.text = element_text(size = rel(0.6)),
+      legend.title= element_blank(),
+      axis.text = element_text(size = rel(0.6)),
+      axis.title = element_text(size = rel(0.6)),
+      axis.line.x = element_line(colour = "gray"),
+      axis.ticks.x = element_line(colour = "gray"),
+      strip.background = element_blank()
+      ) +
     xlab("$\\theta$") +
     panel_border() +
     ylab("") +
     xlim(-5, 15)
-
-  
 
   return(p)
 
@@ -254,16 +278,8 @@ scaling_example_plot <- function(draws) {
   mcmc_scaling_plot(draws, c(0.3, 0.25, 0.2, 0.65, 0.5, 0.35), prior_sd = 2.5, prior_df = 1000, likelihood_df = 1000, component = "prior") +
     theme(
       strip.text = element_blank(),
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      axis.line.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
-      strip.background = element_blank(),
-      legend.position = c(0.01, 0.9),
-      legend.title = element_blank()
+      strip.text.y.left = element_blank(),
+      legend.position = c(0.01, 0.85),
     )  +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
@@ -271,17 +287,7 @@ scaling_example_plot <- function(draws) {
 normal_prior_normal_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, c(0.3, 0.25, 0.2, 0.65, 0.5, 0.4), prior_sd = 2.5, prior_df = 1000, likelihood_df = 1000, component = c("prior", "likelihood")) +
     theme(
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
-      axis.line.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
-      strip.background = element_blank(),
-      legend.position = c(0.01, 0.95),
-      legend.title = element_blank()
+      legend.position = c(0.01, 0.9),
     ) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
@@ -305,18 +311,8 @@ normal_prior_t_lik <- function(model, iter_sampling, iter_warmup) {
 normal_prior_t_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, rep(c(0.65, 0.5, 0.35), 2), prior_sd = 1, prior_df = 1000, likelihood_df = 4, component = c("prior", "likelihood")) +
     theme(
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
-      axis.line.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
-      strip.background = element_blank(),
-      legend.position = c(0.01, 0.95),
-      legend.title = element_blank(),
-      ) +
+      legend.position = c(0.01, 0.9)
+    ) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
 ## # weakly informative prior
@@ -340,17 +336,7 @@ weakly_inf_normal_prior_normal_lik <- function(model, iter_sampling, iter_warmup
 weakly_inf_normal_prior_normal_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, c(0.2, 0.2, 0.2, 0.6, 0.5, 0.4), prior_sd = 10, prior_d = 1000, likelihood_df = 1000) +
     theme(
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
-      axis.line.y = element_blank(),
-      axis.ticks.y = element_blank(),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
-      strip.background = element_blank(),
-      legend.position = c(0.01, 0.95),
-      legend.title = element_blank()
+      legend.position = c(0.01, 0.9),
     )  +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
