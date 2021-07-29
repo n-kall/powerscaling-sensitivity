@@ -237,7 +237,7 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
     theme(
       strip.background.y = element_blank(),
       strip.text.x = element_blank(),
-      strip.text.y.left = element_text(angle = 0, size = rel(0.6), hjust = 0),
+      strip.text.y.left = element_text(angle = 0, size = rel(0.6), hjust = 1),
       axis.text.y = element_blank(),
       axis.ticks.y = element_blank(),
       axis.line.y = element_blank(),
