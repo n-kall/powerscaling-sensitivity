@@ -87,13 +87,23 @@ ps <- powerscale_sequence(
 }
 
 powerscale_seq_plot <- function(powerscale_seq) {
-  plot(powerscale_seq, variables = "b_wrist", type = "kde") +
+  powerscale_plot_dens(powerscale_seq, variables = "b_wrist") +
     xlab("$\\beta^{\\text{wrist}}$") +
     guides(
       linetype = "none",
       color = guide_colorbar(
         title = "Power-scaling $\\alpha$"
       )
+    ) +
+    ggplot2::facet_grid(
+      variable ~ component,
+      labeller = ggplot2::labeller(
+        component = c(
+          likelihood = "Likelihood power-scaling",
+          prior = "Prior power-scaling"
+        )
+      ),
+      scales = "free"
     ) +
     cowplot::theme_half_open() +
     theme(
@@ -115,7 +125,7 @@ powerscale_seq_plot <- function(powerscale_seq) {
 
 powerscale_seq_summ_plot <- function(powerscale_seq) {
 
-  plot(powerscale_seq, variables = "b_wrist", type = "summary", quantities = c("mean", "median", "sd", "mad")) +
+  powerscale_plot_quantities(powerscale_seq, variables = "b_wrist", quantities = c("mean", "median", "sd", "mad")) +
     facet_wrap(
       variable ~ quantity,
       scales = "free",
@@ -135,7 +145,7 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
     xlab("Power-scaling $\\alpha$") +
     ylab("Value") +
     scale_color_manual(values = rep("black", 3)) +
-    scale_shape_manual(values = c("likelihood" = 22, "prior" = 15), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
+    scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
     cowplot::theme_half_open() +
     theme(
       legend.text = element_text(size = rel(0.6)),
