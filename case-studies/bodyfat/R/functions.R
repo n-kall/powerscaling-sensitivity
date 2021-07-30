@@ -19,7 +19,8 @@ run_model <- function(compiled_model, data, args) {
     compiled_model,
     iter = 2000,
     warmup = 1000,
-    data = c(data, args)
+    data = c(data, args),
+    seed = 1234
   )
 }
 
@@ -60,7 +61,7 @@ stand <- make_standata(f, d)
 
 m <- stan_model("stan/bodyfat.stan")
 
-fit <- sampling(m, c(stand, auto_prior = auto_prior, prior_width = 1), iter = 2000, warmup = 1000)
+fit <- sampling(m, c(stand, auto_prior = auto_prior, prior_width = 1), iter = 2000, warmup = 1000, seed = 1234)
 
  bm <- brm(
     formula = f,

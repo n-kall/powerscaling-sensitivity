@@ -110,7 +110,7 @@ prepare_data <- function() {
 
 create_fit <- function(model, data, prior) {
 
-  sampling(model, data = c(data, prior = prior), warmup = 4000, iter = 80000)
+  sampling(model, data = c(data, prior = prior), warmup = 2000, iter = 10000, seed = 1234)
   
 }
 

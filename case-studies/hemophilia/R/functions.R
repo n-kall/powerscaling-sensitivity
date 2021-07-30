@@ -14,7 +14,9 @@ prepare_data <- function(data_file) {
 run_model <- function(compiled_model, data) {
   sampling(
     compiled_model,
-    data = data
+    data = data,
+    iter = 2000,
+    warmup = 1000
   )
 }
 
@@ -23,7 +25,7 @@ run_sensitivity_analysis <- function(formula, data) {
   prior <- c(prior(normal(0, 2.5), class = "b"),
              prior(normal(0, 10), class = "Intercept"))
   
-  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior)
+  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior, iter = 2000, warmup = 1000, seed = 1234)
   
   powerscale_sensitivity(
     fit,
@@ -35,7 +37,7 @@ run_sensitivity_sequence <- function(formula, data) {
   prior <- c(prior(normal(0, 2.5), class = "b"),
              prior(normal(0, 10), class = "Intercept"))
   
-  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior)
+  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior, iter = 4000, warmup = 1000)
 
   powerscale_sequence(fit, moment_match = TRUE)
 }
