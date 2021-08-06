@@ -30,11 +30,13 @@ plot_priors <- function() {
 p <- priordata %>%
     ggplot(aes(x = tau, y = density, color = dist)) +
     geom_line(size = 1) +
-  scale_color_brewer(type = "qual", name = "Distribution", drop = FALSE) +
+  scale_color_brewer(type = "qual", palette = "Dark2", name = "Distribution", drop = FALSE) +
     cowplot::theme_half_open() +
     ylab("Density") +
     xlab("$\\tau$") +
-    theme(
+  theme(
+#    panel.background = element_rect(colour = "#F2F2F2",
+#                                    fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),
@@ -68,11 +70,13 @@ p <- priordata %>%
   p2 <-  priordata2 %>%
     ggplot(aes(x = tau, y = density, color = dist)) +
     geom_line(size = 1) +
-    scale_color_brewer(type = "qual", name = "Distribution", drop = FALSE) +
+    scale_color_brewer(type = "qual", palette = "Dark2", name = "Distribution", drop = FALSE) +
     cowplot::theme_half_open() +
     ylab("") +
     xlab("$\\tau$") +
     theme(
+#      panel.background = element_rect(colour = "#F2F2F2",
+#                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),

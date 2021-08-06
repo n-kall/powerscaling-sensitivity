@@ -30,16 +30,8 @@ list(
     prepare_data(hemo_data_file)
   ),
   tar_target(
-    hemo_standata,
-    make_standata(hemo_formula, hemo_cleandata)
-  ),
-  tar_target(
-    hemo_compiled_model,
-    stan_model(hemo_stancode_file)
-  ),
-  tar_target(
     hemo_fit,
-    run_model(hemo_compiled_model, hemo_standata)
+    run_model(hemo_formula, hemo_cleandata)
   ),
   tar_target(
     hemo_sensitivity,

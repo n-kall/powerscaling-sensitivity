@@ -11,13 +11,11 @@ prepare_data <- function(data_file) {
     )
 }
 
-run_model <- function(compiled_model, data) {
-  sampling(
-    compiled_model,
-    data = data,
-    iter = 2000,
-    warmup = 1000
-  )
+run_model <- function(formula, data) {
+  prior <- c(prior(normal(0, 2.5), class = "b"),
+             prior(normal(0, 10), class = "Intercept"))
+  
+  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior, iter = 2000, warmup = 1000, seed = 1234)
 }
 
 run_sensitivity_analysis <- function(formula, data) {
@@ -37,7 +35,7 @@ run_sensitivity_sequence <- function(formula, data) {
   prior <- c(prior(normal(0, 2.5), class = "b"),
              prior(normal(0, 10), class = "Intercept"))
   
-  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior, iter = 4000, warmup = 1000)
+  fit <- brm(formula, data, save_pars = save_pars(all = TRUE), prior = prior, iter = 2000, warmup = 1000, seed = 1234)
 
   powerscale_sequence(fit, moment_match = TRUE)
 }
@@ -61,6 +59,8 @@ create_plot <- function(data) {
     ylab("AHF activity 2") +
     cowplot::theme_half_open() +
     theme(
+#      panel.background = element_rect(colour = "#F2F2F2",
+#                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       legend.title = element_blank(),
       axis.text = element_text(size = rel(0.6)),

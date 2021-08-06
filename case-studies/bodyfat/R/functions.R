@@ -108,6 +108,8 @@ powerscale_seq_plot <- function(powerscale_seq) {
     ) +
     cowplot::theme_half_open() +
     theme(
+#      panel.background = element_rect(colour = "#F2F2F2",
+#                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),
@@ -149,6 +151,8 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
     scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
     cowplot::theme_half_open() +
     theme(
+#      panel.background = element_rect(colour = "#F2F2F2",
+#                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),

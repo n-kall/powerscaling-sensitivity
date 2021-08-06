@@ -29,7 +29,7 @@ options(
   )
 )
 
-iter_sampling <- 100000
+iter_sampling <- 300000
 iter_warmup <- 10000
 
 mcmc_scaling <- function(model, iter_sampling, iter_warmup,
@@ -235,6 +235,8 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
     geom_text(aes(x = x, y = y, label = scaling), data = alpha_labels, show.legend = FALSE) +
     theme_cowplot() +
     theme(
+#      panel.background = element_rect(colour = "#F2F2F2",
+#                                      fill = "#F2F2F2"),
       strip.background.y = element_blank(),
       strip.text.x = element_blank(),
       strip.text.y.left = element_text(angle = 0, size = rel(0.6), hjust = 1),
