@@ -10,81 +10,46 @@ create_formula <- function() {
   bf(siri ~ age + weight_kg + height_cm + neck + chest + abdomen + hip + thigh + knee + ankle + biceps + forearm + wrist, family = "gaussian")
 }
 
-prepare_standata <- function(formula, data) {
-  make_standata(formula = formula, data = data)
-}
+create_brm_model <- function(formula, data, prior) {
 
-run_model <- function(compiled_model, data, args) {
-  fit1 <- sampling(
-    compiled_model,
-    iter = 2000,
-    warmup = 1000,
-    data = c(data, args),
-    seed = 1234
-  )
-}
-
-create_brm_model <- function(formula, data, model_fit, args) {
-
+  if (prior == "auto") {
+    prior <- sjstats::auto_prior(formula, data, gaussian = TRUE)
+  } else if (prior == "base") {
+    prior <- brms::prior(normal(0, 1), class = "b")
+  }
+  
   bm <- brm(
     formula = formula,
     data = data,
     family = "gaussian",
-    empty = TRUE,
     save_pars = save_pars(all = TRUE),
-    stanvars = c(
-      stanvar(x = args[[1]], name = "prior_width"),
-      stanvar(x = args[["auto_prior"]], name = "auto_prior")
-    )
+    prior = prior
   )
-
-  bm$fit <- model_fit
-  bm <- rename_pars(bm)
 }
 
 sensitivity_analysis <-  function(fit) {
   vars <- c("age", "weight_kg", "height_cm", "neck", "chest", "abdomen", "hip", "thigh", "knee", "ankle", "biceps", "forearm", "wrist")
-  powerscale_sensitivity(fit, variables = c(paste0("b_", vars), "Intercept", "sigma"), component = c("prior", "likelihood"), log_prior_fn = extract_log_prior)
+  
+  powerscale_sensitivity(fit, variable = c(paste0("b_", vars), "sigma", "b_Intercept"))
 }
 
-powerscale_seq <- function(fit) {  
-  powerscale_sequence(fit, component = c("prior", "likelihood"), variables = "wrist", moment_match = FALSE, log_prior_fn = extract_log_prior)
+sensitivity_sequence <- function(fit) {  
+  powerscale_sequence(fit, variable = "wrist", moment_match = FALSE)
 }
 
-powerscale_seq_mm <- function(auto_prior) {
-f <- bf(siri ~ age + weight_kg + height_cm + neck + chest + abdomen + hip + thigh + knee + ankle + biceps + forearm + wrist, family = "gaussian")
+sensitivity_sequence_mm <- function(data, formula, prior) {
 
-d <- read_delim("data/bodyfat.txt", col_types = list(siri = "n"), delim = ";") %>%
-  filter(siri > 0)
+  fit <- create_brm_model(formula, data,  prior)
 
-stand <- make_standata(f, d)
+  vars <- c("age", "weight_kg", "height_cm", "neck", "chest", "abdomen", "hip", "thigh", "knee", "ankle", "biceps", "forearm", "wrist")
 
-m <- stan_model("stan/bodyfat.stan")
 
-fit <- sampling(m, c(stand, auto_prior = auto_prior, prior_width = 1), iter = 2000, warmup = 1000, seed = 1234)
-
- bm <- brm(
-    formula = f,
-    data = d,
-    family = "gaussian",
-    empty = TRUE,
-    save_pars = save_pars(all = TRUE),
-    stanvars = c(
-      stanvar(x = 1, name = "prior_width"),
-      stanvar(x = 0, name = "auto_prior")
+  ps <- powerscale_sequence(
+    fit,
+    variables = vars,
+    moment_match = TRUE
     )
-  )
 
-  bm$fit <- fit
-  bm <- rename_pars(bm)
-
-
-ps <- powerscale_sequence(
-  bm,
-  variables = c("b_wrist", "b_age", "b_chest"),
-  component = c("prior", "likelihood"),
-  moment_match = TRUE
-)
 }
 
 powerscale_seq_plot <- function(powerscale_seq) {
@@ -108,8 +73,8 @@ powerscale_seq_plot <- function(powerscale_seq) {
     ) +
     cowplot::theme_half_open() +
     theme(
-#      panel.background = element_rect(colour = "#F2F2F2",
-#                                      fill = "#F2F2F2"),
+      #      panel.background = element_rect(colour = "#F2F2F2",
+      #                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),
@@ -151,8 +116,8 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
     scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
     cowplot::theme_half_open() +
     theme(
-#      panel.background = element_rect(colour = "#F2F2F2",
-#                                      fill = "#F2F2F2"),
+      #      panel.background = element_rect(colour = "#F2F2F2",
+      #                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),
@@ -165,7 +130,7 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
       axis.ticks.x = element_line(colour = "gray"),
       legend.title = element_text(size = rel(0.6)),
       legend.position = c(0.65, 0.2),
-    ) +
+      ) +
     cowplot::panel_border()
 }
 

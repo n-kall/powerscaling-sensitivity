@@ -51,11 +51,6 @@ list(
     format = "file"
   ),
   tar_target(
-    name = stancode_file,
-    command = "stan/bodyfat.stan",
-    format = "file"
-  ),
-  tar_target(
     name = formula,
     command = create_formula()
   ),
@@ -64,20 +59,8 @@ list(
     command = prepare_data(data_file)
   ),
   tar_target(
-    name = standata,
-    command = prepare_standata(formula, cleandata)
-  ),
-  tar_target(
-    name = compiled_model,
-    command = stan_model(stancode_file)
-  ),
-  tar_target(
-    name = fit_base,
-    command = run_model(compiled_model, standata, c(auto_prior = 0, prior_width = 1))
-  ),
-  tar_target(
     name = brm_base,
-    command = create_brm_model(formula, cleandata, fit_base, c(auto_prior = 0, prior_width = 1))
+    command = create_brm_model(formula, cleandata, prior = "base")
   ),
   tar_target(
     name = sensitivity_base,
@@ -85,7 +68,7 @@ list(
   ),
   tar_target(
     name = sensitivity_sequence_base,
-    powerscale_seq_mm(auto_prior = 0)
+    sensitivity_sequence_mm(data = cleandata, formula = formula, prior = "base")
   ),
   tar_target(
     name = sensitivity_plot_base,
@@ -96,31 +79,39 @@ list(
     command = powerscale_seq_summ_plot(sensitivity_sequence_base)
   ),
   tar_target(
-    name = fit_autoprior,
-    command = run_model(compiled_model, standata, c(auto_prior = 1, prior_width = 1))
-  ),
-  tar_target(
-    name = brm_autoprior,
-    command = create_brm_model(formula, cleandata, fit_autoprior, c(auto_prior = 1, prior_width = 1))
-  ),
-  tar_target(
-    name = sensitivity_autoprior,
-    command = sensitivity_analysis(brm_autoprior)
-  ),
-  tar_target(
-    name = sensitivity_sequence_autoprior,
-    command = powerscale_seq_mm(auto_prior = 1)
-  ),
-  tar_target(
-    name = sensitivity_plot_autoprior,
-    command = powerscale_seq_plot(sensitivity_sequence_autoprior)
-  ),
-  tar_target(
     sensitivity_plot_base_tikz,
-    save_tikz_plot(sensitivity_plot_base + guides(linetype = FALSE), "../../figs/bodyfat_sens_base.tex", 5, 2)
+    save_tikz_plot(sensitivity_plot_base + guides(linetype = "none"), "../../figs/bodyfat_sens_base.tex", 5, 2)
   ),
   tar_target(
     quantities_plot_base_tikz,
     save_tikz_plot(quantities_plot_base, "../../figs/bodyfat_quantities_base.tex", 5, 3.5)
+  ),
+    tar_target(
+    name = brm_auto,
+    command = create_brm_model(formula, cleandata, prior = "auto")
+  ),
+  tar_target(
+    name = sensitivity_auto,
+    command = sensitivity_analysis(brm_auto)
+  ),
+  tar_target(
+    name = sensitivity_sequence_auto,
+    sensitivity_sequence_mm(data = cleandata, formula = formula, prior = "auto")
+  ),
+  tar_target(
+    name = sensitivity_plot_auto,
+    command = powerscale_seq_plot(sensitivity_sequence_auto)
+  ),
+  tar_target(
+    name = quantities_plot_auto,
+    command = powerscale_seq_summ_plot(sensitivity_sequence_auto)
+  ),
+  tar_target(
+    sensitivity_plot_auto_tikz,
+    save_tikz_plot(sensitivity_plot_auto + guides(linetype = "none"), "../../figs/bodyfat_sens_auto.tex", 5, 2)
+  ),
+  tar_target(
+    quantities_plot_auto_tikz,
+    save_tikz_plot(quantities_plot_auto, "../../figs/bodyfat_quantities_auto.tex", 5, 3.5)
   )  
 )
