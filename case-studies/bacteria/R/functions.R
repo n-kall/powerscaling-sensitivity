@@ -114,21 +114,27 @@ prepare_data <- function() {
 
 create_fit <- function(model, data, prior) {
 
-  sampling(model, data = c(data, prior = prior), warmup = 2000, iter = 10000, seed = 1234)
+  sampling(
+    model,
+    data = c(data, prior = prior),
+    warmup = 2000,
+    iter = 10000,
+    seed = 1234
+  )
   
 }
 
 
 sensitivity_analysis <- function(fit, ...) {
   v <- c("b_week", "b_trtDrug", "b_trtDrugP", "mu", "tau")
-  powerscale_sensitivity(fit, variables = v, log_prior_fn = extract_log_prior, moment_match = TRUE, ...)
+  powerscale_sensitivity(fit, variable = v, moment_match = TRUE, ...)
 
 }
 
 sensitivity_sequence <- function(model, data, prior) {
   fit <- create_fit(model, data, prior)
   v <- c("b_week", "b_trtDrug", "b_trtDrugP", "mu", "tau")
-  powerscale_sequence(fit, variables = v, log_prior_fn = extract_log_prior,  moment_match = TRUE)
+  powerscale_sequence(fit, variable = v, moment_match = TRUE)
 }  
 
 save_tikz_plot <- function(plot, filename, width, height) {
