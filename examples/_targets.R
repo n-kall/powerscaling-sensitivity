@@ -26,6 +26,9 @@ options(
 source("R/analytical_scaling.R")
 source("R/conflict.R")
 
+#global vars
+NSAMP <- 200000
+NWARM <- 2000
 
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "latex2exp", "scales", "tikzDevice",
@@ -62,7 +65,7 @@ list(
   ),
   tar_target(
     n_prior_n_lik_draws,
-    normal_prior_normal_lik(conflict_model, 200000, 2000)
+    normal_prior_normal_lik(conflict_model, NSAMP, NWARM)
   ),
   tar_target(
     scale_example_plot,
@@ -70,7 +73,7 @@ list(
   ),
   tar_target(
     scale_example_tikz,
-    save_plot(scale_example_plot, "../figs/scaling-example.tex", 6, 1.8)
+    save_plot(scale_example_plot, "../figs/scaling-example.tex", 6, 2.3)
   ),
   tar_target(
     n_prior_n_lik_plot,
@@ -82,7 +85,7 @@ list(
   ),
   tar_target(
     n_prior_t_lik_draws,
-    normal_prior_t_lik(conflict_model, 200000, 2000)
+    normal_prior_t_lik(conflict_model, NSAMP, NWARM)
   ),
   tar_target(
     n_prior_t_lik_plot,
@@ -94,7 +97,7 @@ list(
   ),
   tar_target(
     weakly_inf_example_draws,
-    weakly_inf_normal_prior_normal_lik(conflict_model, 200000, 2000)
+    weakly_inf_normal_prior_normal_lik(conflict_model, NSAMP, NWARM)
   ),
   tar_target(
     weakly_inf_plot,

@@ -29,9 +29,6 @@ options(
   )
 )
 
-iter_sampling <- 300000
-iter_warmup <- 10000
-
 mcmc_scaling <- function(model, iter_sampling, iter_warmup,
                          data, parameter = "mu") {
 
@@ -192,7 +189,7 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
     bind_rows(analytical_prior_noscale, analytical_likelihood, analytical_likelihood_noscale) %>%
     gather(key = "scaling", value = "density", -scaled_component, -x, -distribution) %>%
     mutate(
-      distribution = factor(distribution, levels = c("prior", "likelihood", "posterior")),
+      distribution = factor(distribution, levels = c("prior", "likelihood")),
       scaled_component = factor(scaled_component, levels = c("Prior power-scaling", "Likelihood power-scaling"))
     )
   
@@ -211,32 +208,37 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
     "Prior power-scaling" = "Prior\npower-scaling",
     "Likelihood power-scaling" = "Likelihood\npower-scaling"
   )
+
+  posterior_only <- combined_draws %>%
+    filter(distribution == "posterior") %>%
+    mutate(distribution = factor(distribution, levels = c("posterior")))
   
   p <- combined_draws %>%
-    mutate(distribution = factor(distribution, levels = c("prior", "likelihood", "posterior"))) %>%
-    filter(distribution == "posterior") %>% 
+    filter(distribution != c("posterior", "prior", "likelihood")) %>% 
+    mutate(distribution = factor(distribution, levels = c("prior", "likelihood"))) %>%
     ggplot(aes(x = value, color = distribution)) +
+    # shaded posterior density
+    geom_density(aes(fill = distribution), color = NA,
+                 alpha = 0.5, trim = FALSE,
+                 show.legend = TRUE, data = posterior_only) +
     # analytical density
     geom_line(aes(x = x, y = density, color = distribution),
               data = analytical, size = 1.1) +
-    # shaded posterior density
-    geom_density(aes(color = distribution, fill = distribution),
-                 alpha = 0.25, size = 1.1, trim = FALSE,
-                 show.legend = FALSE) +
-    scale_color_brewer(type = "qual",
-                       palette = "Set2",
-                       drop = FALSE) +
-    scale_fill_brewer(type = "qual",
-                      palette = "Set2",
-                      drop = FALSE) +
+    scale_color_manual(
+      values = RColorBrewer::brewer.pal(3, "Set2")[1:2]
+    ) +
+    scale_fill_manual(
+      values = RColorBrewer::brewer.pal(3, "Set2")[3]
+    ) +
+    #    scale_fill_brewer(type = "qual",
+    #                      palette = "Set2",
+    #                      drop = FALSE) +
     facet_grid(scaled_component ~ scaling, drop = TRUE,
                switch = "y",
                labeller = labeller(scaled_component = labels)) +
-    geom_text(aes(x = x, y = y, label = scaling), data = alpha_labels, show.legend = FALSE) +
+    geom_text(aes(x = x, y = y, label = scaling), size = 3, color = "black", data = alpha_labels, show.legend = FALSE) +
     theme_cowplot() +
     theme(
-#      panel.background = element_rect(colour = "#F2F2F2",
-#                                      fill = "#F2F2F2"),
       strip.background.y = element_blank(),
       strip.text.x = element_blank(),
       strip.text.y.left = element_text(angle = 0, size = rel(0.6), hjust = 1),
@@ -244,7 +246,8 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
       axis.ticks.y = element_blank(),
       axis.line.y = element_blank(),
       legend.text = element_text(size = rel(0.6)),
-      legend.title= element_blank(),
+      legend.title = element_blank(),
+      legend.spacing.y = unit(0, "lines"),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),
       axis.line.x = element_line(colour = "gray"),
