@@ -23,13 +23,9 @@ parameters {
 }
 transformed parameters {
   real log_prior;
-  log_prior = normal_lpdf(b[1] | 0, 2.5)
-   + uniform_lpdf(b[2] | 0, 2.5)
-   + uniform_lpdf(Intercept | 0, 10);
-
-   /*  log_prior = normal_lpdf(b[1] | prior1, 100) */
-   /* + normal_lpdf(b[2] | prior2, 100) */
-   /* + normal_lpdf(Intercept | 0, 100); */
+  log_prior = normal_lpdf(b[1] | 0, 10)
+   + normal_lpdf(b[2] | -10, 5)
+   + normal_lpdf(Intercept | 0, 10);
 }
 model {
   // likelihood including all constants
@@ -41,5 +37,10 @@ model {
 }
 generated quantities {
   // actual population-level intercept
+  vector[N] log_lik;
   real b_Intercept = Intercept - dot_product(means_X, b);
+
+  for (n in 1:N)
+    log_lik[n] = bernoulli_logit_lpmf(Y[n] | Xc[n, ] * b + Intercept);
+  
 }
