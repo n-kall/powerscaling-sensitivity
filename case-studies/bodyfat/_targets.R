@@ -28,11 +28,17 @@ source("R/functions.R")
 # Set target-specific options such as packages.
 tar_option_set(
   packages = c(
-    "tidyverse",
+    "dplyr",
+    "ggplot2",
+    "stringr",
+    "readr",
+    "tibble",
     "rstan",
     "loo",
     "posterior",
     "brms",
+    "tidybayes",
+    "cowplot",
     "lme4",
     "viridis",
     "bayesplot",
@@ -61,6 +67,10 @@ list(
   tar_target(
     name = brm_base,
     command = create_brm_model(formula, cleandata, prior = "base")
+  ),
+  tar_target(
+    posterior_plot_base,
+    posterior_plot(brm_base)
   ),
   tar_target(
     name = sensitivity_base,
@@ -113,5 +123,9 @@ list(
   tar_target(
     quantities_plot_auto_tikz,
     save_tikz_plot(quantities_plot_auto, "../../figs/bodyfat_quantities_auto.tex", 5, 3.5)
-  )  
+  ),
+  tar_target(
+    posterior_plot_base_tikz,
+    save_tikz_plot(posterior_plot_base, "../../figs/bodyfat_posterior_base.tex", 4, 3)
+  )
 )

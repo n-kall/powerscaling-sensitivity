@@ -26,28 +26,28 @@ parameters {
   real<lower=0> sigma;  // residual SD
 }
 transformed parameters {
-  real log_prior = 0;
+  real lprior = 0;
   if (auto_prior == 0) {
     // priors including all constants
-    log_prior += normal_lpdf(b | 0, prior_width);
+    lprior += normal_lpdf(b | 0, prior_width);
   } else {
     // priors including all constants
-    log_prior += normal_lpdf(b[1] | 0, 1.63);
-    log_prior += normal_lpdf(b[2] | 0, 0.77);
-    log_prior += normal_lpdf(b[3] | 0, 7.89);
-    log_prior += normal_lpdf(b[4] | 0, 9.06);
-    log_prior += normal_lpdf(b[5] | 0, 2.56);
-    log_prior += normal_lpdf(b[6] | 0, 2.04);
-    log_prior += normal_lpdf(b[7] | 0, 3.2);
-    log_prior += normal_lpdf(b[8] | 0, 4.21);
-    log_prior += normal_lpdf(b[9] | 0, 8.95);
-    log_prior += normal_lpdf(b[10] | 0, 12.57);
-    log_prior += normal_lpdf(b[11] | 0, 7.09);
-    log_prior += normal_lpdf(b[12] | 0, 10.25);
-    log_prior += normal_lpdf(b[13] | 0, 22.7);
+    lprior += normal_lpdf(b[1] | 0, 1.63);
+    lprior += normal_lpdf(b[2] | 0, 0.77);
+    lprior += normal_lpdf(b[3] | 0, 7.89);
+    lprior += normal_lpdf(b[4] | 0, 9.06);
+    lprior += normal_lpdf(b[5] | 0, 2.56);
+    lprior += normal_lpdf(b[6] | 0, 2.04);
+    lprior += normal_lpdf(b[7] | 0, 3.2);
+    lprior += normal_lpdf(b[8] | 0, 4.21);
+    lprior += normal_lpdf(b[9] | 0, 8.95);
+    lprior += normal_lpdf(b[10] | 0, 12.57);
+    lprior += normal_lpdf(b[11] | 0, 7.09);
+    lprior += normal_lpdf(b[12] | 0, 10.25);
+    lprior += normal_lpdf(b[13] | 0, 22.7);
   }
-  log_prior += student_t_lpdf(Intercept | 3, 19.2, 9.2);
-  log_prior += student_t_lpdf(sigma | 3, 0, 9.2)
+  lprior += student_t_lpdf(Intercept | 3, 19.2, 9.2);
+  lprior += student_t_lpdf(sigma | 3, 0, 9.2)
     - 1 * student_t_lccdf(0 | 3, 0, 9.2);
 
 }
@@ -56,7 +56,7 @@ model {
   if (!prior_only) {
     target += normal_id_glm_lpdf(Y | Xc, Intercept, b, sigma);
   }
-  target += log_prior;
+  target += lprior;
 }
 generated quantities {
   // actual population-level intercept
