@@ -89,14 +89,14 @@ list(
     prior_plot,
     plot_priors()
   ),
-  tar_target(
-    sensitivity_seq1,
-    sensitivity_sequence(compiled_model, data, 1)
-  ),
-  tar_target(
-    sensitivity_seq2,
-    sensitivity_sequence(compiled_model, data, 2)
-  ),
+  ## tar_target(
+  ##   sensitivity_seq1,
+  ##   sensitivity_sequence(compiled_model, data, 1)
+  ## ),
+  ## tar_target(
+  ##   sensitivity_seq2,
+  ##   sensitivity_sequence(compiled_model, data, 2)
+  ## ),
   tar_target(
     prior_plot_tikz,
     save_tikz_plot(prior_plot, "../../figs/bacteria_priors.tex", width = 5, height = 2)

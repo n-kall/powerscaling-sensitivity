@@ -28,10 +28,10 @@ transformed parameters {
     log_prior = gamma_lpdf(tau | 0.01, 0.01);
   } else if (prior == 1) {
     // alt 1. half normal
-    log_prior = normal_lpdf(tau | 0, 1);
+    log_prior = normal_lpdf(tau | 0, 10);
   } else if (prior == 2) {
    // alt 2. half cauchy
-    log_prior = cauchy_lpdf(tau | 0, 1);
+    log_prior = cauchy_lpdf(tau | 0, 100);
   } else if (prior == 3) {
     // alt 3. uniform
   } else if (prior == 4) {
@@ -41,10 +41,10 @@ transformed parameters {
     log_prior = gamma_lpdf(tau | 9, 0.5);
   }
     
-  log_prior += normal_lpdf(mu | 0, 100);
-  log_prior += normal_lpdf(b_week | 0, 100);
-  log_prior += normal_lpdf(b_trtDrug | 0, 100);
-  log_prior += normal_lpdf(b_trtDrugP | 0, 100);
+  log_prior += normal_lpdf(mu | 0, 10);
+  log_prior += normal_lpdf(b_week | 0, 10);
+  log_prior += normal_lpdf(b_trtDrug | 0, 10);
+  log_prior += normal_lpdf(b_trtDrugP | 0, 10);
 
   for (n in 1:N) {
     theta[n] =
