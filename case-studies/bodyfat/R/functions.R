@@ -74,28 +74,33 @@ powerscale_seq_plot <- function(powerscale_seq) {
       )
     ) +
     ggplot2::facet_grid(
-      variable ~ component,
+      component ~ variable,
       labeller = ggplot2::labeller(
         component = c(
           likelihood = "Likelihood power-scaling",
           prior = "Prior power-scaling"
         )
       ),
-      scales = "free"
+      scales = "free",
+      switch = "y"
     ) +
     cowplot::theme_half_open() +
     theme(
+      plot.title = element_blank(),
+      plot.subtitle = element_blank(),
       #      panel.background = element_rect(colour = "#F2F2F2",
       #                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
       axis.text = element_text(size = rel(0.6)),
+      axis.text.y = element_blank(),
+      axis.title.y = element_blank(),
       axis.title = element_text(size = rel(0.6)),
       strip.background = element_blank(),
-      strip.text.y = element_blank(),
-      strip.text.x = element_text(size = rel(0.6)),
+      strip.text.x = element_blank(),
+      strip.text.y.left = element_text(size = rel(0.6), angle = 0),
       legend.text.align = 0,
-      axis.line.y = element_line(colour = "gray"),
-      axis.ticks.y = element_line(colour = "gray"),
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_blank(),
       axis.line.x = element_line(colour = "gray"),
       axis.ticks.x = element_line(colour = "gray"),
       legend.title = element_text(size = rel(0.6))) +
@@ -105,7 +110,7 @@ powerscale_seq_plot <- function(powerscale_seq) {
 
 powerscale_seq_summ_plot <- function(powerscale_seq) {
 
-  powerscale_plot_quantities(powerscale_seq, variables = "b_wrist", quantities = c("mean", "median", "sd", "mad")) +
+  powerscale_plot_quantities(powerscale_seq, variables = "b_wrist", quantities = c("mean", "sd")) +
     facet_wrap(
       variable ~ quantity,
       scales = "free",
@@ -113,21 +118,21 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
       labeller = as_labeller(
         c(
           "b_wrist" = "",
-          "sd" = "SD",
+          "sd" = "Standard deviation",
           "mean" = "Mean",
-          "median" = "Median",
-          "mad" = "MAD",
           "cjs_dist" = "$\\text{CJS}_{\\text{dist}}$"
         )
       )
     ) +
     guides(colour = "none") +
     xlab("Power-scaling $\\alpha$") +
-    ylab("Value") +
     scale_color_manual(values = rep("black", 3)) +
     scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
     cowplot::theme_half_open() +
     theme(
+      legend.position = "bottom",
+      plot.title = element_blank(),
+      plot.subtitle = element_blank(),
       #      panel.background = element_rect(colour = "#F2F2F2",
       #                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),
@@ -140,23 +145,23 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
       axis.ticks.y = element_line(colour = "gray"),
       axis.line.x = element_line(colour = "gray"),
       axis.ticks.x = element_line(colour = "gray"),
-      legend.title = element_text(size = rel(0.6)),
-      legend.position = c(0.65, 0.2),
-      ) +
+      legend.title = element_text(size = rel(0.6))
+    ) +
     cowplot::panel_border()
 }
 
 
 powerscale_seq_ecdf_plot <- function(powerscale_seq) {
 
-  powerscale_plot_ecdf(powerscale_seq, variables = "b_wrist", quantities = c("mean", "median", "sd", "mad")) +
+  powerscale_plot_ecdf(powerscale_seq, variables = "b_wrist") +
     guides(colour = "none") +
     xlab("Power-scaling $\\alpha$") +
-    ylab("Value") +
     scale_color_manual(values = rep("black", 3)) +
     scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
     cowplot::theme_half_open() +
     theme(
+      plot.title = element_blank(),
+      plot.subtitle = element_blank(),
       #      panel.background = element_rect(colour = "#F2F2F2",
       #                                      fill = "#F2F2F2"),
       legend.text = element_text(size = rel(0.6)),

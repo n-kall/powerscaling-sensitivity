@@ -94,7 +94,7 @@ list(
   ),
   tar_target(
     quantities_plot_base_tikz,
-    save_tikz_plot(quantities_plot_base, "../../figs/bodyfat_quantities_base.tex", 5, 3.5)
+    save_tikz_plot(quantities_plot_base, "../../figs/bodyfat_quantities_base.tex", 5, 2.5)
   ),
     tar_target(
     name = brm_auto,
@@ -118,11 +118,11 @@ list(
   ),
   tar_target(
     sensitivity_plot_auto_tikz,
-    save_tikz_plot(sensitivity_plot_auto + guides(linetype = "none"), "../../figs/bodyfat_sens_auto.tex", 5, 2)
+    save_tikz_plot(sensitivity_plot_auto + guides(linetype = "none"), "../../figs/bodyfat_sens_auto.tex", 5, 5)
   ),
   tar_target(
     quantities_plot_auto_tikz,
-    save_tikz_plot(quantities_plot_auto, "../../figs/bodyfat_quantities_auto.tex", 5, 3.5)
+    save_tikz_plot(quantities_plot_auto, "../../figs/bodyfat_quantities_auto.tex", 5, 2.5)
   ),
   tar_target(
     posterior_plot_base_tikz,
