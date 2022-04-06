@@ -250,12 +250,12 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
       legend.spacing.y = unit(0, "lines"),
       axis.text = element_text(size = rel(0.6)),
       axis.title = element_text(size = rel(0.6)),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
       strip.background = element_blank()
       ) +
     xlab("$\\theta$") +
-    panel_border() +
+    panel_border("black", size = rel(0.8)) +
     ylab("") +
     xlim(-5, 15)
 

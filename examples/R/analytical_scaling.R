@@ -155,13 +155,13 @@ make_example_dists_plot <- function(d) {
       axis.title.y = element_blank(),
       axis.line.y = element_blank(),
       legend.text.align = 0,
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
       legend.title = element_blank(),
 #      panel.background = element_rect(fill = "#F2F2F2",
 #                                      colour = "#F2F2F2")
     ) +
-    cowplot::panel_border() +
+    cowplot::panel_border("black", rel(0.8)) +
     facet_wrap(~dist, ncol = 4, scales = "free") +
   guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 

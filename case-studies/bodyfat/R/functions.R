@@ -58,8 +58,10 @@ sensitivity_sequence_mm <- function(data, formula, prior) {
   ps <- powerscale_sequence(
     fit,
     variables = vars,
+    lower_alpha = 0.8,
     moment_match = TRUE,
-    component = c("prior", "likelihood")
+    component = c("prior", "likelihood"),
+    symmetric = TRUE
   )
 
 }
@@ -77,8 +79,8 @@ powerscale_seq_plot <- function(powerscale_seq) {
       component ~ variable,
       labeller = ggplot2::labeller(
         component = c(
-          likelihood = "Likelihood power-scaling",
-          prior = "Prior power-scaling"
+          likelihood = "Likelihood\npower-scaling",
+          prior = "Prior\npower-scaling"
         )
       ),
       scales = "free",
@@ -101,10 +103,10 @@ powerscale_seq_plot <- function(powerscale_seq) {
       legend.text.align = 0,
       axis.line.y = element_blank(),
       axis.ticks.y = element_blank(),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
       legend.title = element_text(size = rel(0.6))) +
-    cowplot::panel_border()
+    cowplot::panel_border(color = "black", size = rel(0.8))
 }
 
 
@@ -141,13 +143,13 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
       strip.text = element_text(size = rel(0.6)),
       strip.background = element_blank(),
       legend.text.align = 0,
-      axis.line.y = element_line(colour = "gray"),
-      axis.ticks.y = element_line(colour = "gray"),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_line(colour = "black"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
       legend.title = element_text(size = rel(0.6))
     ) +
-    cowplot::panel_border()
+    cowplot::panel_border(color = "black", size = rel(0.8))
 }
 
 
@@ -170,14 +172,14 @@ powerscale_seq_ecdf_plot <- function(powerscale_seq) {
       strip.text = element_text(size = rel(0.6)),
       strip.background = element_blank(),
       legend.text.align = 0,
-      axis.line.y = element_line(colour = "gray"),
-      axis.ticks.y = element_line(colour = "gray"),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_line(colour = "black"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
       legend.title = element_text(size = rel(0.6)),
       legend.position = c(0.65, 0.2),
       ) +
-    cowplot::panel_border()
+    cowplot::panel_border(color = "black", size = rel(0.8))
 }
 
 posterior_plot <- function(fit) {
@@ -199,15 +201,15 @@ posterior_plot <- function(fit) {
       strip.text = element_text(size = rel(0.6)),
       strip.background = element_blank(),
       legend.text.align = 0,
-      axis.line.y = element_line(colour = "gray"),
-      axis.ticks.y = element_line(colour = "gray"),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_line(colour = "black"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
       axis.text.y = element_text(hjust = 0)
     ) +
     ylab("") +
     xlab("") +
-    panel_border()
+    cowplot::panel_border(color = "black", size = rel(0.8))
 
 }
 

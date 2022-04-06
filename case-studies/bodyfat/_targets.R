@@ -90,7 +90,7 @@ list(
   ),
   tar_target(
     sensitivity_plot_base_tikz,
-    save_tikz_plot(sensitivity_plot_base + guides(linetype = "none"), "../../figs/bodyfat_sens_base.tex", 5, 2)
+    save_tikz_plot(sensitivity_plot_base + guides(linetype = "none"), "../../figs/bodyfat_sens_base.tex", 4, 3)
   ),
   tar_target(
     quantities_plot_base_tikz,
