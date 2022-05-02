@@ -23,7 +23,7 @@ create_brm_model <- function(formula, data, prior) {
     data = data,
     iter = 2000,
     warmup = 1000,
-    seed = 1234,
+    seed = 12345,
     family = "gaussian",
     save_pars = save_pars(all = TRUE),
     prior = prior
@@ -59,6 +59,7 @@ sensitivity_sequence_mm <- function(data, formula, prior) {
     fit,
     variables = vars,
     lower_alpha = 0.8,
+    length = 5,
     moment_match = TRUE,
     component = c("prior", "likelihood"),
     symmetric = TRUE
@@ -88,39 +89,37 @@ powerscale_seq_plot <- function(powerscale_seq) {
     ) +
     cowplot::theme_half_open() +
     theme(
-      plot.title = element_blank(),
-      plot.subtitle = element_blank(),
-      #      panel.background = element_rect(colour = "#F2F2F2",
-      #                                      fill = "#F2F2F2"),
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
       axis.text.y = element_blank(),
       axis.title.y = element_blank(),
-      axis.title = element_text(size = rel(0.6)),
+      axis.title = element_text(size = 10),
       strip.background = element_blank(),
       strip.text.x = element_blank(),
-      strip.text.y.left = element_text(size = rel(0.6), angle = 0),
+      strip.text.y.left = element_text(size = 10, angle = 0, hjust = 1),
       legend.text.align = 0,
       axis.line.y = element_blank(),
       axis.ticks.y = element_blank(),
       axis.line.x = element_blank(),
       axis.ticks.x = element_line(colour = "black"),
-      legend.title = element_text(size = rel(0.6))) +
-    cowplot::panel_border(color = "black", size = rel(0.8))
+      legend.title = element_text(size = 10),
+      aspect.ratio = 1
+    ) +
+    cowplot::panel_border(color = "black", size = 1)
 }
 
 
 powerscale_seq_summ_plot <- function(powerscale_seq) {
 
-  powerscale_plot_quantities(powerscale_seq, variables = "b_wrist", quantities = c("mean", "sd")) +
+  powerscale_plot_quantities(powerscale_seq, variables = "b_wrist", quantities = c("mean", "sd"), mcse = TRUE) +
     facet_wrap(
-      variable ~ quantity,
+      . ~ quantity,
       scales = "free",
       ncol = 3,
       labeller = as_labeller(
         c(
           "b_wrist" = "",
-          "sd" = "Standard deviation",
+          "sd" = "SD",
           "mean" = "Mean",
           "cjs_dist" = "$\\text{CJS}_{\\text{dist}}$"
         )
@@ -129,27 +128,25 @@ powerscale_seq_summ_plot <- function(powerscale_seq) {
     guides(colour = "none") +
     xlab("Power-scaling $\\alpha$") +
     scale_color_manual(values = rep("black", 3)) +
-    scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
+    scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = NULL) +
+    scale_linetype_manual(values = "dashed", labels = "$\\pm2$ MCSE", name = NULL) +
     cowplot::theme_half_open() +
     theme(
       legend.position = "bottom",
-      plot.title = element_blank(),
-      plot.subtitle = element_blank(),
-      #      panel.background = element_rect(colour = "#F2F2F2",
-      #                                      fill = "#F2F2F2"),
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
       strip.background = element_blank(),
       legend.text.align = 0,
       axis.line.y = element_blank(),
       axis.ticks.y = element_line(colour = "black"),
       axis.line.x = element_blank(),
       axis.ticks.x = element_line(colour = "black"),
-      legend.title = element_text(size = rel(0.6))
+      legend.title = element_text(size = 10),
+      aspect.ratio = 1
     ) +
-    cowplot::panel_border(color = "black", size = rel(0.8))
+    cowplot::panel_border(color = "black", size = 1)
 }
 
 
@@ -158,18 +155,16 @@ powerscale_seq_ecdf_plot <- function(powerscale_seq) {
   powerscale_plot_ecdf(powerscale_seq, variables = "b_wrist") +
     guides(colour = "none") +
     xlab("Power-scaling $\\alpha$") +
-    scale_color_manual(values = rep("black", 3)) +
-    scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = "") + 
+    scale_color_viridis_c(values = rep("black", 3)) +
+    scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = NULL) + 
     cowplot::theme_half_open() +
     theme(
       plot.title = element_blank(),
       plot.subtitle = element_blank(),
-      #      panel.background = element_rect(colour = "#F2F2F2",
-      #                                      fill = "#F2F2F2"),
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
       strip.background = element_blank(),
       legend.text.align = 0,
       axis.line.y = element_blank(),
@@ -178,8 +173,9 @@ powerscale_seq_ecdf_plot <- function(powerscale_seq) {
       axis.ticks.x = element_line(colour = "black"),
       legend.title = element_text(size = rel(0.6)),
       legend.position = c(0.65, 0.2),
+      aspect.ratio = 1
       ) +
-    cowplot::panel_border(color = "black", size = rel(0.8))
+    cowplot::panel_border(color = "black", size = 1)
 }
 
 posterior_plot <- function(fit) {
@@ -196,9 +192,7 @@ posterior_plot <- function(fit) {
     theme_cowplot() +
         scale_y_discrete(labels = newlabel) +
     theme(
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
+      axis.text = element_text(size = 10),
       strip.background = element_blank(),
       legend.text.align = 0,
       axis.line.y = element_blank(),
@@ -209,7 +203,17 @@ posterior_plot <- function(fit) {
     ) +
     ylab("") +
     xlab("") +
-    cowplot::panel_border(color = "black", size = rel(0.8))
+    cowplot::panel_border(color = "black", size = 1)
+
+}
+
+join_plots <- function(plot1, plot2, type) {
+
+  if (type == "ecdf") {
+    (plot1 + ggtitle(label = "", subtitle = "Original prior") + theme(plot.title = element_blank(), plot.subtitle = element_text(size = 10))) + (plot2 + theme(plot.title = element_blank(), strip.text.y.left = element_blank(), plot.subtitle = element_text(size = 10)) + ggtitle(label = "", subtitle = "Adjusted prior")) + patchwork::plot_layout(guides = "collect")
+  } else if (type == "quantities") {
+    (plot1 + ggtitle(label = "", subtitle = "Original prior") + theme(plot.title = element_blank(), plot.subtitle = element_text(size = 10))) / (plot2 + ggtitle(label = "", subtitle = "Adjusted prior") + theme(plot.title = element_blank(), plot.subtitle = element_text(size = 10))) + patchwork::plot_layout(guides = "collect") & theme(legend.position = "bottom")
+  }
 
 }
 
@@ -219,4 +223,8 @@ save_tikz_plot <- function(plot, filename, width, height) {
   print(plot)
 
   dev.off()
+  lines <- readLines(con = filename)
+  lines <- lines[-which(grepl("\\path\\[clip\\]*", lines))]
+  lines <- lines[-which(grepl("\\path\\[use as bounding box*", lines))]
+  writeLines(lines, con = filename)
 }

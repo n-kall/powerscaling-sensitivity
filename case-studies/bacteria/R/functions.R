@@ -30,26 +30,27 @@ plot_priors <- function() {
 p <- priordata %>%
     ggplot(aes(x = tau, y = density, color = dist)) +
     geom_line(size = 1) +
-  scale_color_brewer(type = "qual", palette = "Dark2", name = "Distribution", drop = FALSE) +
+  scale_color_brewer(type = "qual", palette = "Dark2", name = NULL, drop = FALSE) +
     cowplot::theme_half_open() +
-    ylab("Density") +
+    ylab("$p(\\tau)$") +
     xlab("$\\tau$") +
   theme(
 #    panel.background = element_rect(colour = "#F2F2F2",
 #                                    fill = "#F2F2F2"),
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
       strip.background = element_blank(),
       legend.text.align = 0,
       legend.position = c(0.05, 0.88),
-      axis.line.y = element_line(colour = "gray"),
-      axis.ticks.y = element_line(colour = "gray"),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
-      legend.title = element_text(size = rel(0.6))) +
-    cowplot::panel_border()
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_line(colour = "black"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
+      legend.title = element_text(size = 10),
+      aspect.ratio = 1) +
+    cowplot::panel_border(color = "black")
 
   priordata2 <- tibble(
     tau = x2,
@@ -70,25 +71,26 @@ p <- priordata %>%
   p2 <- priordata2 %>%
     ggplot(aes(x = tau, y = density, color = dist)) +
     geom_line(size = 1) +
-    scale_color_brewer(type = "qual", palette = "Dark2", name = "Distribution", drop = FALSE) +
+    scale_color_brewer(type = "qual", palette = "Dark2", name = NULL, drop = FALSE) +
     cowplot::theme_half_open() +
-    ylab("") +
+    ylab(NULL) +
     xlab("$\\tau$") +
     theme(
 #      panel.background = element_rect(colour = "#F2F2F2",
 #                                      fill = "#F2F2F2"),
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
       strip.background = element_blank(),
       legend.text.align = 0,
-      axis.line.y = element_line(colour = "gray"),
-      axis.ticks.y = element_line(colour = "gray"),
-      axis.line.x = element_line(colour = "gray"),
-      axis.ticks.x = element_line(colour = "gray"),
-      legend.title = element_text(size = rel(0.6))) +
-    cowplot::panel_border() +
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_line(colour = "black"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
+      legend.title = element_text(size = 10),
+      aspect.ratio = 1) +
+    cowplot::panel_border(color = "black") +
     guides(color = "none")
 
 
@@ -137,9 +139,13 @@ sensitivity_sequence <- function(model, data, prior) {
 }
 
 save_tikz_plot <- function(plot, filename, width, height) {
-
+  
   tikz(file = filename, width = width, height = height)
   print(plot)
 
   dev.off()
+  lines <- readLines(con = filename)
+  lines <- lines[-which(grepl("\\path\\[clip\\]*", lines))]
+  lines <- lines[-which(grepl("\\path\\[use as bounding box*", lines))]
+  writeLines(lines, con = filename)
 }

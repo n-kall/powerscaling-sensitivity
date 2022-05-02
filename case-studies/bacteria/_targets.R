@@ -100,7 +100,7 @@ list(
   ),
   tar_target(
     prior_plot_tikz,
-    save_tikz_plot(prior_plot, "../../figs/bacteria_priors.tex", width = 5, height = 2)
+    save_tikz_plot(prior_plot, "../../figs/bacteria_priors.tex", width = 5.2, height = 2)
   )
 )
 

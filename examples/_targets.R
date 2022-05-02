@@ -25,6 +25,7 @@ options(
 # custom functions
 source("R/analytical_scaling.R")
 source("R/conflict.R")
+source("R/cdf_diff.R")
 
 #global vars
 NSAMP <- 200000
@@ -33,7 +34,7 @@ NWARM <- 2000
 # Set target-specific options such as packages.
 tar_option_set(packages = c("tidyverse", "latex2exp", "scales", "tikzDevice",
                             "cmdstanr", "priorsense", "posterior", "cowplot",
-                            "patchwork", "metRology", "stringi"))
+                            "patchwork", "metRology", "stringi", "viridisLite"))
 
 list(
   # example dists
@@ -46,12 +47,12 @@ list(
     do.call(create_distributions, parameters)
   ),
   tar_target(
-    plot,
+    analytical_plot,
     make_example_dists_plot(distributions)
   ),
   tar_target(
-    tikzplot,
-    save_plot(plot, "../figs/example_dists.tex", width = 6 , height = 2)
+    analytical_tikzplot,
+    save_plot(analytical_plot, "../figs/example_dists.tex", width = 5.2 , height = 5.2)
   ),
   # conflict examples
   tar_target(
@@ -73,7 +74,7 @@ list(
   ),
   tar_target(
     scale_example_tikz,
-    save_plot(scale_example_plot, "../figs/scaling-example.tex", 6, 2.3)
+    save_plot(scale_example_plot, "../figs/scaling-example.tex", 379 / 72.27, 379 / 72.27)
   ),
   tar_target(
     n_prior_n_lik_plot,
@@ -81,7 +82,7 @@ list(
   ),
   tar_target(
     n_prior_n_lik_tikz,
-    save_plot(n_prior_n_lik_plot, "../figs/conflict-example-1.tex", 6, 3.2)
+    save_plot(n_prior_n_lik_plot, "../figs/conflict-example-1.tex", 379 / 72.27, 379 / 72.27)
   ),
   tar_target(
     n_prior_t_lik_draws,
@@ -93,7 +94,7 @@ list(
   ),
   tar_target(
     n_prior_t_lik_tikz,
-    save_plot(n_prior_t_lik_plot, "../figs/conflict-example-2.tex", 6, 3.2)
+    save_plot(n_prior_t_lik_plot, "../figs/conflict-example-2.tex", 379 / 72.27, 379 / 72.27)
   ),
   tar_target(
     weakly_inf_example_draws,
@@ -105,6 +106,16 @@ list(
   ),
   tar_target(
     weakly_inf_tikz,
-    save_plot(weakly_inf_plot, "../figs/weak.tex", 6, 3.2)
+    save_plot(weakly_inf_plot, "../figs/weak.tex", 379 / 72.27, 379 / 72.27)
+  ),
+
+  # cdf diff example
+  tar_target(
+    cdf_example_plot,
+    create_cdf_example_plot()
+  ),
+  tar_target(
+    cdf_example_plot_tikz,
+    save_plot(cdf_example_plot, "../figs/cdf_example.tex", 3.6, 3.6)
   )
 )

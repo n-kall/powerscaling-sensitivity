@@ -15,7 +15,7 @@ make_prior <- function(b1_mu, b2_mu, b1_sigma, b2_sigma) {
   prior <- c(
     prior_string(paste0("normal(", b1_mu, ", ", b1_sigma, ")"), coef = "AHFactivity1"),
     prior_string(paste0("normal(", b2_mu, ",", b2_sigma, ")"), coef = "AHFactivity2"),
-    prior(normal(0, 100), class = "Intercept"))
+    prior(normal(0, 10), class = "Intercept"))
   
   }
 

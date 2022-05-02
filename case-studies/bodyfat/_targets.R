@@ -34,6 +34,7 @@ tar_option_set(
     "readr",
     "tibble",
     "rstan",
+    "tidyverse",
     "loo",
     "posterior",
     "brms",
@@ -89,14 +90,6 @@ list(
     command = powerscale_seq_summ_plot(sensitivity_sequence_base)
   ),
   tar_target(
-    sensitivity_plot_base_tikz,
-    save_tikz_plot(sensitivity_plot_base + guides(linetype = "none"), "../../figs/bodyfat_sens_base.tex", 4, 3)
-  ),
-  tar_target(
-    quantities_plot_base_tikz,
-    save_tikz_plot(quantities_plot_base, "../../figs/bodyfat_quantities_base.tex", 5, 2.5)
-  ),
-    tar_target(
     name = brm_auto,
     command = create_brm_model(formula, cleandata, prior = "auto")
   ),
@@ -117,15 +110,24 @@ list(
     command = powerscale_seq_summ_plot(sensitivity_sequence_auto)
   ),
   tar_target(
-    sensitivity_plot_auto_tikz,
-    save_tikz_plot(sensitivity_plot_auto + guides(linetype = "none"), "../../figs/bodyfat_sens_auto.tex", 5, 5)
+    sensitivity_jointplot,
+    join_plots(sensitivity_plot_base, sensitivity_plot_auto, type = "ecdf")
   ),
   tar_target(
-    quantities_plot_auto_tikz,
-    save_tikz_plot(quantities_plot_auto, "../../figs/bodyfat_quantities_auto.tex", 5, 2.5)
+    sensitivity_jointplot_tikz,
+    save_tikz_plot(sensitivity_jointplot, "../../figs/bodyfat_sens_joint.tex", width = 5.2, 3.7)
   ),
   tar_target(
     posterior_plot_base_tikz,
-    save_tikz_plot(posterior_plot_base, "../../figs/bodyfat_posterior_base.tex", 4, 3)
+    save_tikz_plot(posterior_plot_base, "../../figs/bodyfat_posterior_base.tex", 3, 3)
+  ),
+  tar_target(
+    quantities_jointplot,
+    join_plots(quantities_plot_base,
+               quantities_plot_auto, type = "quantities")
+  ),
+  tar_target(
+    quantities_plot_joint_tikz,
+    save_tikz_plot(quantities_jointplot, "../../figs/bodyfat_quantities_joint.tex", 5.2, 5.2)
   )
 )

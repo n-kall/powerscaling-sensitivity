@@ -137,41 +137,44 @@ make_example_dists_plot <- function(d) {
     mutate(density = scale(density, center = FALSE)) %>%
     ggplot(aes(x = theta, y = density, color = scale)) +
     geom_line(size = 1) +
-    ggplot2::scale_color_viridis_d(
-      option = "plasma"
-    ) +
+    ggplot2::scale_color_manual(
+      values = cetcolor::cet_pal(3, "d8")) +
     ylab("Unnormalized density") +
     xlab("$\\theta$") +
     cowplot::theme_half_open() +
     theme(
-      legend.text = element_text(size = rel(0.6)),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
-      strip.text = element_text(size = rel(0.6)),
-      strip.background = element_blank(),
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title.y = element_text(size = 10),
       axis.text.y = element_blank(),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
+      strip.background = element_blank(),
       axis.ticks.y = element_blank(),
       legend.position = c(0.05, 0.85),
-      axis.title.y = element_blank(),
       axis.line.y = element_blank(),
       legend.text.align = 0,
       axis.line.x = element_blank(),
       axis.ticks.x = element_line(colour = "black"),
       legend.title = element_blank(),
-#      panel.background = element_rect(fill = "#F2F2F2",
-#                                      colour = "#F2F2F2")
+      aspect.ratio = 1
     ) +
-    cowplot::panel_border("black", rel(0.8)) +
+    ylab("$p(\\theta)^{\\alpha}$") +
+    cowplot::panel_border("black", size = 1) +
     facet_wrap(~dist, ncol = 4, scales = "free") +
-  guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
+    guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 
   return(p)
 }
 
 save_plot <- function(plot, filename, width, height) {
- 
+  
   tikz(file = filename, width = width, height = height)
   print(plot)
 
   dev.off()
+  lines <- readLines(con = filename)
+  lines <- lines[-which(grepl("\\path\\[clip\\]*", lines))]
+  lines <- lines[-which(grepl("\\path\\[use as bounding box*", lines))]
+  writeLines(lines, con = filename)
 }

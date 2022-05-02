@@ -1,34 +1,3 @@
-library(cmdstanr)
-library(priorsense)
-library(posterior)
-library(tikzDevice)
-library(tidyverse)
-library(cowplot)
-library(patchwork)
-library(metRology)
-library(stringi)
-
-options(
-  tizkDocumentDelcaration = "\\documentclass[10pt]{article}",
-  tikzLatexPackages = c(
-    "\\usepackage{tikz}",
-    "\\usepackage{amsmath}",
-    "\\usepackage{amsfonts}",
-    "\\usepackage{bm}",
-    "\\usepackage{lmodern}",
-    "\\usepackage{multirow}",
-    "\\usepackage[T1]{fontenc}",
-    "\\usepackage{textcomp}",
-    "\\usepackage{microtype}",
-    "\\DeclareMathOperator{\\normal}{normal}",
-    "\\DeclareMathOperator{\\Bernoulli}{Bernoulli}",
-    "\\DeclareMathOperator{\\gammadist}{gamma}",
-    "\\DeclareMathOperator{\\expdist}{exponential}",
-    "\\DeclareMathOperator{\\betadist}{beta}",
-    "\\DeclareMathOperator{\\Cauchy}{Cauchy}"
-  )
-)
-
 mcmc_scaling <- function(model, iter_sampling, iter_warmup,
                          data, parameter = "mu") {
 
@@ -238,25 +207,27 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
                labeller = labeller(scaled_component = labels)) +
     geom_text(aes(x = x, y = y, label = scaling), size = 3, color = "black", data = alpha_labels, show.legend = FALSE) +
     theme_cowplot() +
+    xlab("$\\theta$") +
+    ylab("$p(\\theta)$") +
     theme(
+      strip.placement = "outside",
       strip.background.y = element_blank(),
       strip.text.x = element_blank(),
-      strip.text.y.left = element_text(angle = 0, size = rel(0.6), hjust = 1),
+      strip.text.y.left = element_text(angle = 0, size = 10, hjust = 1),
       axis.text.y = element_blank(),
       axis.ticks.y = element_blank(),
       axis.line.y = element_blank(),
-      legend.text = element_text(size = rel(0.6)),
+      legend.text = element_text(size = 10),
       legend.title = element_blank(),
       legend.spacing.y = unit(0, "lines"),
-      axis.text = element_text(size = rel(0.6)),
-      axis.title = element_text(size = rel(0.6)),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 10),
       axis.line.x = element_blank(),
       axis.ticks.x = element_line(colour = "black"),
-      strip.background = element_blank()
+      strip.background = element_blank(),
+      aspect.ratio = 1
       ) +
-    xlab("$\\theta$") +
-    panel_border("black", size = rel(0.8)) +
-    ylab("") +
+    panel_border(color = "black", size = 1) +
     xlim(-5, 15)
 
   return(p)
@@ -293,6 +264,7 @@ normal_prior_normal_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, c(0.3, 0.25, 0.2, 0.65, 0.5, 0.4), prior_sd = 2.5, prior_df = 1000, likelihood_df = 1000, component = c("prior", "likelihood")) +
     theme(
       legend.position = c(0.01, 0.9),
+      axis.title.y = element_text(size = 10, vjust = -30)
     ) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
@@ -316,7 +288,8 @@ normal_prior_t_lik <- function(model, iter_sampling, iter_warmup) {
 normal_prior_t_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, rep(c(0.65, 0.5, 0.35), 2), prior_sd = 1, prior_df = 1000, likelihood_df = 4, component = c("prior", "likelihood")) +
     theme(
-      legend.position = c(0.01, 0.9)
+      legend.position = c(0.01, 0.9),
+      axis.title.y = element_text(size = 10, vjust = -30)
     ) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
@@ -342,6 +315,7 @@ weakly_inf_normal_prior_normal_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, c(0.2, 0.2, 0.2, 0.6, 0.5, 0.4), prior_sd = 10, prior_d = 1000, likelihood_df = 1000) +
     theme(
       legend.position = c(0.01, 0.9),
+      axis.title.y = element_text(size = 10, vjust = -30)
     )  +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
