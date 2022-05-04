@@ -255,17 +255,18 @@ scaling_example_plot <- function(draws) {
     theme(
       strip.text = element_blank(),
       strip.text.y.left = element_blank(),
-      legend.position = c(0.01, 0.85),
+      legend.position = c(0.01, 0.8),
     )  +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
 
 normal_prior_normal_lik_plot <- function(draws) {
-  mcmc_scaling_plot(draws, c(0.3, 0.25, 0.2, 0.65, 0.5, 0.4), prior_sd = 2.5, prior_df = 1000, likelihood_df = 1000, component = c("prior", "likelihood")) +
+  mcmc_scaling_plot(draws, c(0.3, 0.25, 0.2, 0.625, 0.5, 0.4), prior_sd = 2.5, prior_df = 1000, likelihood_df = 1000, component = c("prior", "likelihood")) +
     theme(
       legend.position = c(0.01, 0.9),
       axis.title.y = element_text(size = 10, vjust = -30)
     ) +
+    ylim(0, 0.65) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
 
@@ -286,11 +287,12 @@ normal_prior_t_lik <- function(model, iter_sampling, iter_warmup) {
 }
 
 normal_prior_t_lik_plot <- function(draws) {
-  mcmc_scaling_plot(draws, rep(c(0.65, 0.5, 0.35), 2), prior_sd = 1, prior_df = 1000, likelihood_df = 4, component = c("prior", "likelihood")) +
+  mcmc_scaling_plot(draws, rep(c(0.625, 0.5, 0.35), 2), prior_sd = 1, prior_df = 1000, likelihood_df = 4, component = c("prior", "likelihood")) +
     theme(
       legend.position = c(0.01, 0.9),
       axis.title.y = element_text(size = 10, vjust = -30)
     ) +
+    ylim(0, 0.65) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
 ## # weakly informative prior

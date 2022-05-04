@@ -151,7 +151,7 @@ make_example_dists_plot <- function(d) {
       strip.text = element_text(size = 10),
       strip.background = element_blank(),
       axis.ticks.y = element_blank(),
-      legend.position = c(0.05, 0.85),
+      legend.position = c(0.05, 0.8),
       axis.line.y = element_blank(),
       legend.text.align = 0,
       axis.line.x = element_blank(),
