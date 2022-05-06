@@ -139,6 +139,7 @@ make_example_dists_plot <- function(d) {
     geom_line(size = 1) +
     ggplot2::scale_color_manual(
       values = cetcolor::cet_pal(3, "d8")) +
+    scale_x_continuous(labels = function(x) round(x, 2)) +
     ylab("Unnormalized density") +
     xlab("$\\theta$") +
     cowplot::theme_half_open() +
@@ -160,7 +161,7 @@ make_example_dists_plot <- function(d) {
       aspect.ratio = 1
     ) +
     ylab("$p(\\theta)^{\\alpha}$") +
-    cowplot::panel_border("black", size = 1) +
+    cowplot::panel_border("black", size = 0.5) +
     facet_wrap(~dist, ncol = 4, scales = "free") +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 

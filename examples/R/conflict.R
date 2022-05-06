@@ -227,7 +227,7 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
       strip.background = element_blank(),
       aspect.ratio = 1
       ) +
-    panel_border(color = "black", size = 1) +
+    panel_border(color = "black", size = 0.5) +
     xlim(-5, 15)
 
   return(p)
@@ -314,10 +314,11 @@ weakly_inf_normal_prior_normal_lik <- function(model, iter_sampling, iter_warmup
 }
 
 weakly_inf_normal_prior_normal_lik_plot <- function(draws) {
-  mcmc_scaling_plot(draws, c(0.2, 0.2, 0.2, 0.6, 0.5, 0.4), prior_sd = 10, prior_d = 1000, likelihood_df = 1000) +
+  mcmc_scaling_plot(draws, c(0.2, 0.2, 0.2, 0.625, 0.5, 0.4), prior_sd = 10, prior_d = 1000, likelihood_df = 1000) +
     theme(
       legend.position = c(0.01, 0.9),
       axis.title.y = element_text(size = 10, vjust = -30)
     )  +
+    ylim(0, 0.65) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
