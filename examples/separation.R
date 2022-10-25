@@ -5,6 +5,7 @@ library(cmdstanr)
 library(posterior)
 library(detectseparation)
 library(purrr)
+library(furrr)
 library(patchwork)
 library(ncomplete)
 
@@ -23,7 +24,7 @@ separate_gendata <- function(n = 15, intercept = 0, b = c(1, 1),
 }
 
 datasets <- map(
-  1:1000,
+  1:2,
   ~separate_gendata(
     b = c(1, 1),
     sigma = c(10, 10, 10)
@@ -39,9 +40,9 @@ ncompl <- function(dataset) {
 
 }
 
-fits <- map(datasets, ~m$sample(data = .x, refresh = 0))
+fits <- future_map(datasets, ~m$sample(data = .x, refresh = 0))
 
-sens <- map(fits, ~powerscale_sensitivity(.x))
+sens <- future_map(fits, ~powerscale_sensitivity(.x))
 
 ncompletes <- map(datasets, ~ncompl(.x)$NCOMPLETE)
 
