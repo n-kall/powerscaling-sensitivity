@@ -53,34 +53,38 @@ pcomp <- qplot(unlist(ncompletes), unlist(prior_sens)) + geom_hline(yintercept =
 
 lcomp <- qplot(unlist(ncompletes), unlist(like_sens)) + geom_hline(yintercept = 0.05) + ylab("Likelihood sensitivity") + xlab("n_complete")
 
-plt <- function(dataset) {
+p <- pcomp + lcomp
 
-  x1 <- dataset$X[,2]
-  x2 <- dataset$X[,3]
-  y <- dataset$Y
+ggsave("separation_plot.pdf", p)
 
-  d <- tibble(x1 = x1, x2 = x2, y = y)
+## plt <- function(dataset) {
+
+##   x1 <- dataset$X[,2]
+##   x2 <- dataset$X[,3]
+##   y <- dataset$Y
+
+##   d <- tibble(x1 = x1, x2 = x2, y = y)
   
-  d |>
-    ggplot(
-    aes(x = x1, y = x2, color = factor(y))) +
-    geom_point() +
-    coord_equal() +
-    xlim(-1, 1) +
-    ylim(-1, 1) +
-    theme_minimal() +
-    scale_color_brewer(type = "qual", palette = "Set1")
-}
+##   d |>
+##     ggplot(
+##     aes(x = x1, y = x2, color = factor(y))) +
+##     geom_point() +
+##     coord_equal() +
+##     xlim(-1, 1) +
+##     ylim(-1, 1) +
+##     theme_minimal() +
+##     scale_color_brewer(type = "qual", palette = "Set1")
+## }
 
-plots <- map(datasets, ~plt(.x))
+## plots <- map(datasets, ~plt(.x))
 
 
 
-flagged <- map_lgl(sens, ~(!all(.x$sensitivity$diagnosis == "-")))
-flagged_sep <- intersect(which(flagged), which(unlist(sep)))
-flagged_nosep <- setdiff(which(flagged), which(unlist(sep)))
-unflagged <- which(!flagged)
+#flagged <- map_lgl(sens, ~(!all(.x$sensitivity$diagnosis == "-")))
+#flagged_sep <- intersect(which(flagged), which(unlist(sep)))
+#flagged_nosep <- setdiff(which(flagged), which(unlist(sep)))
+#unflagged <- which(!flagged)
 
-p <- wrap_plots(plots[c(unflagged[c(1)], flagged_sep[c(1)], flagged_nosep[c(1)])]) + plot_layout(guides = "collect", nrow = 1) + plot_annotation(tag_levels = "A")
+#p <- wrap_plots(plots[c(unflagged[c(1)], flagged_sep[c(1)], flagged_nosep[c(1)])]) + plot_layout(guides = "collect", nrow = 1) + plot_annotation(tag_levels = "A")
 
 ggsave("sep.pdf", p, width = 8, height = 6)
