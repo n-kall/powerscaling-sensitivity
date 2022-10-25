@@ -10,14 +10,14 @@ parameters {
   vector[K] b; // population-level effects
 }
 transformed parameters {
-  real log_prior = 0; // prior contributions to the log posterior
-  log_prior += student_t_lpdf(b | 4, 0, sigma);
+  real lprior = 0; // prior contributions to the log posterior
+  lprior += student_t_lpdf(b | 4, 0, sigma);
 }
 model {
   // likelihood including constants
     target += bernoulli_logit_glm_lpmf(Y | X, 0, b);
   // priors including constants
-  target += log_prior;
+  target += lprior;
 }
 generated quantities {
   vector[N] log_lik;
