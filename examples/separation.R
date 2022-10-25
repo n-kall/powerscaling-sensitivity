@@ -8,6 +8,8 @@ library(furrr)
 library(patchwork)
 library(ncomplete)
 
+plan(multicore)
+
 m <- cmdstan_model(exe_file = "bernoulli_logit")
 
 separate_gendata <- function(n = 15, intercept = 0, b = c(1, 1),
