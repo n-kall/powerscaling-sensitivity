@@ -30,8 +30,6 @@ datasets <- map(
   )
 )
 
-sep <- map(datasets, ~detect_separation(x = .x$X, y = .x$Y)$separation)
-
 ncompl <- function(dataset) {
 
   d <- matrix(c(dataset$X[, -1], dataset$Y), nrow = nrow(dataset$X))
