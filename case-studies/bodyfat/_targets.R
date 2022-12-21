@@ -115,7 +115,7 @@ list(
   ),
   tar_target(
     sensitivity_jointplot_tikz,
-    save_tikz_plot(sensitivity_jointplot, "../../figs/bodyfat_sens_joint.tex", width = 5.2, 3.7)
+    save_tikz_plot(sensitivity_jointplot, "../../figs/bodyfat_sens_joint.tex", width = 5.2, 3.2)
   ),
   tar_target(
     posterior_plot_base_tikz,
@@ -128,6 +128,6 @@ list(
   ),
   tar_target(
     quantities_plot_joint_tikz,
-    save_tikz_plot(quantities_jointplot, "../../figs/bodyfat_quantities_joint.tex", 5.2, 5.2)
+    save_tikz_plot(quantities_jointplot, "../../figs/bodyfat_quantities_joint.tex", 5.2, 4.5)
   )
 )

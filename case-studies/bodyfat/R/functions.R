@@ -228,3 +228,45 @@ save_tikz_plot <- function(plot, filename, width, height) {
   lines <- lines[-which(grepl("\\path\\[use as bounding box*", lines))]
   writeLines(lines, con = filename)
 }
+
+
+powerscale_seq_summ_plot_poster <- function(powerscale_seq) {
+
+  powerscale_plot_quantities(powerscale_seq, variables = "b_wrist", quantities = c("mean"), mcse = FALSE) +
+    facet_wrap(
+      . ~ quantity,
+      scales = "free",
+      ncol = 3,
+      labeller = as_labeller(
+        c(
+          "b_wrist" = "",
+          "sd" = "SD",
+          "mean" = "Mean",
+          "cjs_dist" = "$\\text{CJS}_{\\text{dist}}$"
+        )
+      )
+    ) +
+    guides(colour = "none") +
+    xlab("Power-scaling $\\alpha$") +
+    scale_color_manual(values = rep("black", 3)) +
+    scale_shape_manual(values = c("prior" = 15, "likelihood" = 22), labels = c("Prior power-scaling", "Likelihood power-scaling"), name = NULL) +
+    scale_linetype_manual(values = "dashed", labels = "$\\pm2$ MCSE", name = NULL) +
+    cowplot::theme_half_open() +
+    theme(
+      legend.position = "bottom",
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
+      strip.background = element_blank(),
+      legend.text.align = 0,
+      axis.line.y = element_blank(),
+      axis.ticks.y = element_line(colour = "black"),
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
+      legend.title = element_text(size = 10),
+      aspect.ratio = 1
+    ) +
+
+    cowplot::panel_border(color = "black", size = 1)
+}

@@ -7,30 +7,35 @@ mcmc_scaling <- function(model, iter_sampling, iter_warmup,
 
   fit_base <- model$sample(
     data = c(data, prior_alpha = 1, likelihood_alpha = 1),
+    parallel_chains = 4,
     iter_sampling = iter_sampling,
     iter_warmup = iter_warmup,
     )
   
   fit_weak_likelihood <- model$sample(
     data = c(data, list(likelihood_alpha = 0.5, prior_alpha = 1)),
+    parallel_chains = 4,
     iter_sampling = iter_sampling,
     iter_warmup = iter_warmup,
     )
 
   fit_weak_prior <- model$sample(
     data = c(data, list(likelihood_alpha = 1, prior_alpha = 0.5)),
+    parallel_chains = 4,
     iter_sampling = iter_sampling,
     iter_warmup = iter_warmup,
     )
 
   fit_strong_likelihood <- model$sample(
     data = c(data, list(likelihood_alpha = 2, prior_alpha = 1)),
+    parallel_chains = 4,
     iter_sampling = iter_sampling,
     iter_warmup = iter_warmup,
     )
 
   fit_strong_prior <- model$sample(
     data = c(data, list(prior_alpha = 2, likelihood_alpha = 1)),
+    parallel_chains = 4,
     iter_sampling = iter_sampling,
     iter_warmup = iter_warmup,
     )
@@ -106,7 +111,7 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
            )
 
   analytical_prior <- tibble(
-    x = seq(-5, 15, 0.1),
+    x = seq(-7.5, 10, 0.1),
     "$\\alpha = 1$" = dt.scaled(x, df = prior_df, mean = 0, sd = prior_sd),
     "$\\alpha = 0.5$" = dt.scaled(x, df = prior_df, mean = 0, sd = prior_sd*sqrt(2)),
     "$\\alpha = 2$" = dt.scaled(x, df = prior_df, mean = 0, sd = prior_sd/sqrt(2)),
@@ -115,10 +120,10 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
   )
 
   analytical_likelihood <- tibble(
-    x = seq(-5, 15, 0.1),
-    "$\\alpha = 1$" = dt.scaled(x, df = likelihood_df, mean = 10, sd = likelihood_sd),
-    "$\\alpha = 0.5$" = dt.scaled(x, df = likelihood_df, mean = 10, sd = likelihood_sd*sqrt(2)),
-    "$\\alpha = 2$" = dt.scaled(x, df = likelihood_df, mean = 10, sd = likelihood_sd/sqrt(2)),
+    x = seq(-7.5, 10, 0.1),
+    "$\\alpha = 1$" = dt.scaled(x, df = likelihood_df, mean = 5, sd = likelihood_sd),
+    "$\\alpha = 0.5$" = dt.scaled(x, df = likelihood_df, mean = 5, sd = likelihood_sd*sqrt(2)),
+    "$\\alpha = 2$" = dt.scaled(x, df = likelihood_df, mean = 5, sd = likelihood_sd/sqrt(2)),
     distribution = "likelihood",
     scaled_component = "Likelihood power-scaling"
   )
@@ -166,7 +171,7 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
     scaling = factor(rep(c("$\\alpha = 2$", "$\\alpha = 1$", "$\\alpha = 0.5$"), 2)),
     scaled_component = factor(rep(c("Prior power-scaling", "Likelihood power-scaling"), each = 3), levels = c("Prior power-scaling", "Likelihood power-scaling")),
     distribution = factor(rep(c("prior", "likelihood"), each = 3), levels = c("prior", "likelihood", "posterior")),
-    x = rep(c(0, 10), each = 3),
+    x = rep(c(0, 5), each = 3),
     y = rep(y_positions)
   ) %>%
     filter(scaled_component %in% 
@@ -228,7 +233,7 @@ mcmc_scaling_plot <- function(combined_draws, y_positions, prior_sd, prior_df, l
       aspect.ratio = 1
       ) +
     panel_border(color = "black", size = 0.5) +
-    xlim(-5, 15)
+    xlim(-7.5, 10)
 
   return(p)
 
@@ -244,7 +249,7 @@ normal_prior_normal_lik <- function(model, iter_sampling, iter_warmup) {
       location_prior = 0,
       scale_prior = 2.5,
       df_lik = 1000,
-      location_lik = 10,
+      location_lik = 5,
       scale_lik = 1
     )
   )
@@ -279,7 +284,7 @@ normal_prior_t_lik <- function(model, iter_sampling, iter_warmup) {
       df_prior = 1000,
       location_prior = 0,
       scale_prior = 1,
-      df_lik = 4,
+      df_lik = 2,
       location_lik = 10,
       scale_lik = 1
     )
@@ -289,12 +294,41 @@ normal_prior_t_lik <- function(model, iter_sampling, iter_warmup) {
 normal_prior_t_lik_plot <- function(draws) {
   mcmc_scaling_plot(draws, rep(c(0.625, 0.5, 0.35), 2), prior_sd = 1, prior_df = 1000, likelihood_df = 4, component = c("prior", "likelihood")) +
     theme(
+      legend.position = c(0.01, 0.875),
+      axis.title.y = element_text(size = 10, vjust = -30)
+    ) +
+    ylim(0, 0.65) +
+    guides(color = guide_legend(keywidth = 0.2, keyheight = 0.12, default.unit = "inch"))
+}
+
+
+student_prior_t_lik <- function(model, iter_sampling, iter_warmup) {
+  mcmc_scaling(
+    model = model,
+    iter_sampling = iter_sampling,
+    iter_warmup = iter_warmup,
+    data = list(
+      df_prior = 4,
+      location_prior = 0,
+      scale_prior = 2.5,
+      df_lik = 4,
+      location_lik = 5,
+      scale_lik = 1
+    )
+  )
+}
+
+student_prior_t_lik_plot <- function(draws) {
+  mcmc_scaling_plot(draws, c(0.3, 0.25, 0.2, 0.6, 0.5, 0.4), prior_sd = 2.5, prior_df = 4, likelihood_df = 4, component = c("prior", "likelihood")) +
+    theme(
       legend.position = c(0.01, 0.9),
       axis.title.y = element_text(size = 10, vjust = -30)
     ) +
     ylim(0, 0.65) +
     guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
 }
+
+
 ## # weakly informative prior
 
 weakly_inf_normal_prior_normal_lik <- function(model, iter_sampling, iter_warmup) {
@@ -307,7 +341,7 @@ weakly_inf_normal_prior_normal_lik <- function(model, iter_sampling, iter_warmup
       location_prior = 0,
       scale_prior = 10,
       df_lik = 1000,
-      location_lik = 10,
+      location_lik = 5,
       scale_lik = 1
     )
   )

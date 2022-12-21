@@ -8,6 +8,9 @@ library(patchwork)
 library(mvtnorm)
 library(clusterGeneration)
 library(future)
+library(cowplot)
+
+set.seed(123)
 
 gen_x <- function(N, K) {
 
@@ -23,7 +26,7 @@ gen_y <- function(X, sigma_Y) {
   b <- rep(1/ncol(X), times = ncol(X))
   mu <- X %*% b
 
-  Y <- rt(nrow(X),, 3, mu, sigma_Y)
+  Y <- rnorm(nrow(X), mu, sigma_Y)
   return(Y)
 }
 
@@ -41,34 +44,36 @@ sim_scale <- function(N, K, N_scaled, b_scales) {
   )
 }
 
-scales <- c(0.125, 0.25, 0.5, 1, 2, 4, 8)
+scales <- c(0.25, 0.5, 1, 2, 4)
 
-iters <- 1:100
+iters <- 1:1000
 
 dat <- map(iters, ~sim_scale(25, 4, 2, scales))
 
 dat <- unlist(dat, recursive = FALSE)
 
-fits_t <- brm_multiple(
-  bf(Y ~ ., sigma = 1),
-  data = dat,
-  family = "gaussian",
-  prior = c(prior(student_t(3, 0, 1), class = "b"),
-            prior(normal(0, 10), class = "Intercept")), combine = FALSE, backend = "cmdstanr")
+## fits_t <- brm_multiple(
+##   bf(Y ~ ., sigma = 1),
+##   data = dat,
+##   family = "gaussian",
+##   prior = c(prior(student_t(3, 0, 1), class = "b"),
+##             prior(normal(0, 10), class = "Intercept")), combine = FALSE, backend = "cmdstanr", seed = 123)
 
-names(fits_t) <- paste0("i", iters, ",", rep(scales, times = length(iters)))
+## names(fits_t) <- paste0("i", iters, ",", rep(scales, times = length(iters)))
 
-sens_t <- map_df(fits_t, ~powerscale_sensitivity(.)$sensitivity, .id = "iter-scale")
+## sens_t <- map_df(fits_t, ~powerscale_sensitivity(.)$sensitivity, .id = "iter-scale")
 
-p_t <- sens_t |>
-  separate("iter-scale", into = c("iter", "scale"), convert = TRUE, sep = ",") |>
-  filter(variable %in% c("b_X1", "b_X2", "b_X3", "b_X4", "b_Intercept")) |>
-  group_by(scale, variable) |>
-  summarise(prior = mean(prior), likelihood = mean(likelihood)) |>
-  gather(key = "component", value = "sensitivity", prior, likelihood) |>
-  ggplot(aes(x = scale, y = sensitivity, color = variable, group = variable)) +
-  facet_wrap(~component) +
-  geom_line()
+## saveRDS(sens_t, "sens_t.RDS")
+
+## p_t <- sens_t |>
+##   separate("iter-scale", into = c("iter", "scale"), convert = TRUE, sep = ",") |>
+##   filter(variable %in% c("b_X1", "b_X2", "b_X3", "b_X4", "b_Intercept")) |>
+##   group_by(scale, variable) |>
+##   summarise(prior = mean(prior), likelihood = mean(likelihood)) |>
+##   gather(key = "component", value = "sensitivity", prior, likelihood) |>
+##   ggplot(aes(x = scale, y = sensitivity, color = variable, group = variable)) +
+##   facet_wrap(~component) +
+##   geom_line()
 
 
 fits_n <- brm_multiple(
@@ -76,20 +81,59 @@ fits_n <- brm_multiple(
   data = dat,
   family = "gaussian",
   prior = c(prior(normal(0, 1), class = "b"),
-            prior(normal(0, 10), class = "Intercept"), combine = FALSE, backend = "cmdstanr")
+            prior(normal(0, 10), class = "Intercept")), combine = FALSE, backend = "cmdstanr", seed = 123)
 
   names(fits_n) <- paste0("i", iters, ",", rep(scales, times = length(iters)))
 
   sens_n <- map_df(fits_n, ~powerscale_sensitivity(.)$sensitivity, .id = "iter-scale")
 
+saveRDS(sens_n, "sens_n1000.RDS")
+
+sens_n <- readRDS("sens_n.RDS")
+
+#sens_t <- readRDS("sens_t.RDS")
+
   p_n <- sens_n |>
     separate("iter-scale", into = c("iter", "scale"), convert = TRUE, sep = ",") |>
-    filter(variable %in% c("b_X1", "b_X2", "b_X3", "b_X4", "b_Intercept")) |>
-    group_by(scale, variable) |>
-    summarise(prior = mean(prior), likelihood = mean(likelihood)) |>
+    filter(variable %in% c("b_X1", "b_X2", "b_X3", "b_X4"),
+           scale > 0.125, scale < 8) |>
     gather(key = "component", value = "sensitivity", prior, likelihood) |>
-    ggplot(aes(x = scale, y = sensitivity, color = variable, group = variable)) +
-    facet_wrap(~component) +
-    geom_line()
+    group_by(scale, variable, component) |>
+    summarise(mean = mean(sensitivity), sd = sd(sensitivity)) |>
+    mutate(unscaled = ifelse(variable %in% c("b_X1", "b_X2"), FALSE, TRUE)) |>
+    ggplot(aes(x = scale, y = mean, color = unscaled, shape = unscaled)) +
+    facet_wrap(~component, labeller = ggplot2::labeller(
+      component = c(
+        likelihood = "Likelihood power-scaling",
+        prior = "Prior power-scaling"
+        ))) +
+    geom_point() +
+    scale_color_brewer(type = "qual", labels = c("Scaled: $\\beta_1, \\beta_2$", "Unscaled: $\\beta_3, \\beta_4$")) +
+  #  geom_errorbar(aes(ymin = mean - sd, ymax = mean + sd), width = 0.05)+
+  #  geom_line() +
+    scale_x_log10(breaks = c(0.125, 0.25, 0.5, 1, 2, 4, 8),
+                  labels = c("0.125", "0.25", "0.5", "1", "2", "4", "8")) +
+    scale_shape_manual(values = c(17, 19), labels = c("Scaled: $\\beta_1, \\beta_2$", "Unscaled: $\\beta_3, \\beta_4$")) +
+    ylab("Sensitivity ($D_{\\text{CJS}}$)") +
+    xlab("Covariate scaling factor ($c$)") +
+    cowplot::theme_half_open() +
+    theme(
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title.y = element_text(size = 10),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
+      strip.background = element_blank(),
+      legend.position = c(0.02, 0.2),
+      axis.line.y = element_blank(),
+      legend.text.align = 0,
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
+      axis.ticks.y = element_line(colour = "black"),
+      legend.title = element_blank(),
+      aspect.ratio = 1
+    ) +
+    geom_line(aes(group = variable)) + 
+    cowplot::panel_border("black", size = 0.5)
 
-  p_t / p_n
+save_tikz_plot(p_n, "../figs/covariate_scaling_example.tex", width = 5.2, height = 2.5)

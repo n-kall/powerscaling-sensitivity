@@ -179,3 +179,53 @@ save_plot <- function(plot, filename, width, height) {
   lines <- lines[-which(grepl("\\path\\[use as bounding box*", lines))]
   writeLines(lines, con = filename)
 }
+
+make_example_dists_plot_poster <- function(d) {
+  p <- d %>%
+    mutate(
+      scale = fct_recode(
+        scale,
+        "$\\alpha = 2.0$" = "2",
+        "$\\alpha == 1.33$" = as.character(4/3),
+        "$\\alpha = 1.0$" = "1",
+        "$\\alpha = 0.75$" = "0.75",
+        "$\\alpha = 0.5$" = "0.5"
+      ),
+      scale = fct_rev(scale),
+      dist = fct_relevel(dist, "$\\expdist(1)$", "$\\normal(0, 1)$", "$\\betadist(2,1)$", "$\\gammadist(2, 2)$") 
+    ) %>%
+    filter(dist %in% c("$\\expdist(1)$", "$\\normal(0, 1)$")) %>%
+    group_by(scale, dist) %>%
+    mutate(density = scale(density, center = FALSE)) %>%
+    ggplot(aes(x = theta, y = density, color = scale)) +
+    geom_line(size = 1) +
+    ggplot2::scale_color_manual(
+      values = cetcolor::cet_pal(3, "d8")) +
+    scale_x_continuous(labels = function(x) round(x, 2)) +
+    ylab("Unnormalized density") +
+    xlab("$\\theta$") +
+    cowplot::theme_half_open() +
+    theme(
+      legend.text = element_text(size = 10),
+      axis.text = element_text(size = 10),
+      axis.title.y = element_text(size = 10, angle = 0, vjust = 0.5),
+      axis.text.y = element_blank(),
+      axis.title = element_text(size = 10),
+      strip.text = element_text(size = 10),
+      strip.background = element_blank(),
+      axis.ticks.y = element_blank(),
+      legend.position = c(0.05, 0.8),
+      axis.line.y = element_blank(),
+      legend.text.align = 0,
+      axis.line.x = element_blank(),
+      axis.ticks.x = element_line(colour = "black"),
+      legend.title = element_blank(),
+      aspect.ratio = 1
+    ) +
+    ylab("$p(\\theta)^{\\alpha}$") +
+    cowplot::panel_border("black", size = 0.5) +
+    facet_wrap(~dist, ncol = 4, scales = "free") +
+    guides(color = guide_legend(keywidth = 0.2, keyheight = 0.15, default.unit = "inch"))
+
+  return(p)
+}

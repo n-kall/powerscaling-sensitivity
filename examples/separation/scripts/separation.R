@@ -4,10 +4,13 @@ library(posterior)
 library(purrr)
 library(furrr)
 library(ncomplete)
+library(dplyr)
 
-plan(cluster)
+#plan(multicore)
 
-m <- cmdstan_model(exe_file = "bernoulli_logit")
+m_normal <- cmdstan_model(exe_file = "bernoulli_logit")
+
+m_student <- cmdstan_model(exe_file = "bernoulli_logit_t")
 
 separate_gendata <- function(n = 15, intercept = 0, b = c(1, 1),
                              sigma = c(5, 5, 5),
@@ -35,22 +38,51 @@ fit_sens <- function(model, iter) {
     sigma = c(10, 10, 10)
   )
   
-  fit <- model$sample(data = data, refresh = 0)
+  fit <- model$sample(data = data, refresh = 0, parallel_chains = 4, show_messages = FALSE)
 
   sens <- powerscale_sensitivity(fit)
   ncompletes <- ncompl(data)$NCOMPLETE
 
-  return(list(iter = iter, fit, sens = sens, ncompletes = ncompletes))
+  out <- sens$sensitivity |>
+    mutate(
+      ncomplete = ncompletes,
+      iter = iter
+    )
+  
+  return(out)
   
 }
 
-iters <- 1:10
+iters <- 1:1000
 
-out <- future_map(
+normal_out <- map_dfr(
   iters,
-  ~fit_sens(m, iter = .x),
+  ~fit_sens(m_normal, iter = .x),
   .options = furrr_options(seed = 123)
 )
 
-saveRDS(out, "separation_results.RDS")
+student_out <- map_dfr(
+  iters,
+  ~fit_sens(m_student, iter = .x),
+  .options = furrr_options(seed = 123)
+)
 
+
+
+saveRDS(normal_out, "separation_results_normal.RDS")
+
+saveRDS(student_out, "separation_results_student.RDS")
+
+
+
+
+
+#out <- readRDS("separation_results.RDS")
+
+#sens |>
+  ## gather(prior, likelihood, key = "component", value = "sensitivity") |>
+  ## group_by(component, variable, ncomplete) |>
+  ## summarise(mean_sens = mean(sensitivity)) |>
+  ## ggplot(aes(x = ncomplete, y = mean_sens, group = variable)) +
+  ## geom_line() +
+  ## facet_wrap(~component)

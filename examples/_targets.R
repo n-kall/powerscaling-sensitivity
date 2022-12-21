@@ -28,7 +28,7 @@ source("R/conflict.R")
 source("R/cdf_diff.R")
 
 #global vars
-NSAMP <- 200000
+NSAMP <- 2e5
 NWARM <- 2000
 
 # Set target-specific options such as packages.
@@ -90,11 +90,23 @@ list(
   ),
   tar_target(
     n_prior_t_lik_plot,
-    normal_prior_t_lik_plot(n_prior_n_lik_draws)
+    normal_prior_t_lik_plot(n_prior_t_lik_draws)
   ),
   tar_target(
     n_prior_t_lik_tikz,
     save_plot(n_prior_t_lik_plot, "../figs/conflict-example-2.tex", 379 / 72.27, 379 / 72.27)
+  ),
+    tar_target(
+    t_prior_t_lik_draws,
+    student_prior_t_lik(conflict_model, NSAMP, NWARM)
+  ),
+  tar_target(
+    t_prior_t_lik_plot,
+    student_prior_t_lik_plot(t_prior_t_lik_draws)
+  ),
+  tar_target(
+    t_prior_t_lik_tikz,
+    save_plot(t_prior_t_lik_plot, "../figs/conflict-example-t_t.tex", 379 / 72.27, 379 / 72.27)
   ),
   tar_target(
     weakly_inf_example_draws,
